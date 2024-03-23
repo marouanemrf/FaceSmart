@@ -1,7 +1,7 @@
 import pypyodbc as adbc
 
 driver_name = 'SQL SERVER'
-server_name = 'DESKTOP-B2IG1G0\SQLEXPRESS'
+server_name = 'DESKTOP-B2IG1G0\\SQLEXPRESS'
 data_name = 'DB'
 
 conn_str = f"""
@@ -12,5 +12,3 @@ conn_str = f"""
 """
 
 connection = adbc.connect(conn_str)
-
-print(f'{connection}')

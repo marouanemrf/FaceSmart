@@ -1,18 +1,26 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import connection
-
+from PyQt5.QtCore import Qt
+from interface import Ui_work
+import sys
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
+        self.chance = 0
+        self.max_chance = 3
+        self.MainWindow = MainWindow
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(783, 600)
         MainWindow.setWindowFlags(QtCore.Qt.FramelessWindowHint)
         MainWindow.setAttribute(QtCore.Qt.WA_TranslucentBackground)        
         MainWindow.setMinimumSize(QtCore.QSize(600, 600))
         self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setStyleSheet("border-radius: 7px;")
         self.centralwidget.setObjectName("centralwidget")
         self.widget = QtWidgets.QWidget(self.centralwidget)
         self.widget.setGeometry(QtCore.QRect(70, 40, 671, 391))
         self.widget.setObjectName("widget")
+        self.widget.mousePressEvent = self.mouseclick
+        self.widget.mouseMoveEvent = self.mousemove
         self.image = QtWidgets.QLabel(self.widget)
         self.image.setGeometry(QtCore.QRect(310, -150, 411, 561))
         self.image.setStyleSheet("background-image: ;")
@@ -152,6 +160,18 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        self.login_btn.clicked.connect(self.login)
+        
+    def mouseclick(self, event):
+        if event.button() == Qt.LeftButton:
+                self.mouseclick = event.globalPos()
+                self.mousemove = event.globalPos() - MainWindow.pos()        
+
+    def mousemove(self, event):
+        if event.buttons() == Qt.LeftButton:
+            position = event.globalPos()
+            diff = position - self.mousemove
+            MainWindow.move(diff)    
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -162,6 +182,105 @@ class Ui_MainWindow(object):
         self.label_name.setText(_translate("MainWindow", "UserName"))
         self.label_password.setText(_translate("MainWindow", "Password"))
         self.label.setText(_translate("MainWindow", "Welcome to the team,"))
+
+    def login(self):
+        username = self.user_name.text()
+        password = self.password.text()
+        print("username: ",username)
+        print("password: ",password)
+
+        conn = connection.connection
+        cursor = conn.cursor()
+        query = "select * from gestionair_login where userName = ? and password = ?"
+
+        try:
+          cursor.execute(query,(username,password))
+
+          user = cursor.fetchone()
+
+          if user:
+            self.open()
+          else:
+            
+            self.chance += 1
+
+            if self.chance >= self.max_chance:
+                error_box = QtWidgets.QMessageBox()
+                error_box.setIcon(QtWidgets.QMessageBox.Warning)
+                error_box.setWindowTitle('Error LogIn')
+                error_box.setText('Maximum login attempts reached.')
+                error_box.addButton(QtWidgets.QMessageBox.Ok)
+
+                
+                error_box.setStyleSheet("""
+                QMessageBox {
+                        background-color: #FE4C4C;
+                        border: 1px solid #FF5350;
+                        border-radius: 50px;
+                        padding: 20px;
+                        width: 400px;
+                        max-width: 90%;
+                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+                }
+                QMessageBox QPushButton {
+                        background-color: #FF5350;
+                        color: #F7D1D0;
+                        border: none;
+                        border-radius: 4px;
+                        padding: 10px 20px;
+                        font-size: 16px;
+                }
+                QMessageBox QPushButton:hover {
+                        background-color: #FC0000;
+                }
+                """)
+
+                error_box.exec_()
+                sys.exit()
+
+            else:                       
+
+                error_box = QtWidgets.QMessageBox()
+                error_box.setIcon(QtWidgets.QMessageBox.Warning)
+                error_box.setWindowTitle('Error LogIn')
+                error_box.setText('UserName or Password incorrect')
+                error_box.addButton(QtWidgets.QMessageBox.Ok)
+                error_box.setStyleSheet("""
+                        QMessageBox {
+                        background-color: #FE4C4C;
+                        border: 1px solid #FF5350;
+                        border-radius: 50px;
+                        padding: 20px;
+                        width: 400px;
+                        max-width: 90%;
+                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+                        }
+                        QMessageBox QPushButton {
+                        background-color: #FF5350;
+                        color: #F7D1D0;
+                        border: none;
+                        border-radius: 4px;
+                        padding: 10px 20px;
+                        font-size: 16px;
+                        }
+                        QMessageBox QPushButton:hover {
+                        background-color: #FC0000;
+                        }
+                """)
+                error_box.exec_()
+
+        except Exception as error:
+            print("error: ",error)
+
+    def open(self):
+        self.work_window = QtWidgets.QMainWindow()
+        self.work = Ui_work()
+        self.work.setupUi(self.work_window)
+        self.work_window.show()
+        MainWindow.hide()
+    
+   
+
 import image_rc
 
 
