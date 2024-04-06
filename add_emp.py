@@ -1,17 +1,17 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFileDialog
-from PyQt5.QtGui import QPixmap,QPainter,QBrush,QColor,QPen
-
+from PyQt5.QtGui import QPixmap, QPainter, QBrush, QColor, QPen, QBitmap
+import os
 import connection
 
-class Ui_Form(object):
-    def setupUi(self, Form):
-        Form.setObjectName("Form")
-        Form.resize(414, 409)
-        Form.setWindowFlag(QtCore.Qt.FramelessWindowHint)
-        Form.setAttribute(QtCore.Qt.WA_TranslucentBackground)
-        self.add_widget = QtWidgets.QWidget(Form)
+class Ui_add(object):
+    def setupUi(self, Add_EMP):
+        Add_EMP.setObjectName("Add_EMP")
+        Add_EMP.resize(414, 409)
+        Add_EMP.setWindowFlag(QtCore.Qt.FramelessWindowHint)
+        Add_EMP.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+        self.add_widget = QtWidgets.QWidget(Add_EMP)
         self.add_widget.setGeometry(QtCore.QRect(20, 20, 361, 301))
         self.add_widget.setStyleSheet("width: 190px;\n"
 "height: 254px;\n"
@@ -130,7 +130,7 @@ class Ui_Form(object):
         self.close.setGeometry(QtCore.QRect(330, 10, 13, 13))
         self.close.setStyleSheet("QPushButton {\n"
 "   background-color: rgb(255, 60, 63);\n"
-"    border-radius: 6px;\n"
+"    border-radius: 6px; border: none;\n"
 " border: none;\n"
 "}\n"
 "\n"
@@ -140,7 +140,7 @@ class Ui_Form(object):
         self.close.setText("")
         self.close.setObjectName("close")
         def reduir():
-            Form.showMinimized()   
+            Add_EMP.showMinimized()   
         self.reduit = QtWidgets.QPushButton(self.add_widget)
         self.reduit.clicked.connect(reduir)
         self.reduit.setGeometry(QtCore.QRect(310, 10, 13, 13))
@@ -158,74 +158,70 @@ class Ui_Form(object):
         self.add_widget.mousePressEvent = self.mouseclick
         self.add_widget.mouseMoveEvent = self.mousemove
 
-        self.retranslateUi(Form)
-        QtCore.QMetaObject.connectSlotsByName(Form)
+        self.retranslateUi(Add_EMP)
+        QtCore.QMetaObject.connectSlotsByName(Add_EMP)
 
         self.ajouter.clicked.connect(self.add)
 
+        self.selected_photo_path = ""
+
     def cercle(self, pixmap):
-         diam = min(pixmap.width(), pixmap.height())
-         circle = QPixmap(diam,diam)
-         circle.fill(Qt.transparent)
+        diam = min(pixmap.width(), pixmap.height())
+        circle = QPixmap(diam, diam)
+        circle.fill(Qt.transparent)
 
-         paint = QPainter(circle)
-         paint.setRenderHint(QPainter.Antialiasing, True)
+        mask = QBitmap(diam, diam)
+        mask.fill(Qt.white)
 
-         paint.setBrush(QBrush(QColor(Qt.transparent)))
-         paint.setPen(QPen(QColor(Qt.transparent)))
-         paint.drawEllipse(0,0, diam,diam)
+        paint = QPainter(mask)
+        paint.setRenderHint(QPainter.Antialiasing, True)
+        paint.setBrush(Qt.black)
+        paint.drawEllipse(0, 0, diam, diam)
+        paint.end()
 
-         x = (diam - pixmap.width()) // 2
-         y = (diam - pixmap.height()) // 2
+        pixmap.setMask(mask)
 
-         paint.drawPixmap(x,y,pixmap)
-
-         paint.end()
-
-         return circle
-         
-
+        return pixmap
+        
     def select_pic(self, event):
          if event.button() == Qt.LeftButton:
               file = QFileDialog()
               file.setNameFilter("Images (*.png *.jpg *.jpeg *.bmp *.gif *.tiff)")
               if file.exec_():
                    try:
-                        path = file.selectedFiles()
-                        if path:
-                             path = path[0]
-                             affiche = QPixmap(path).scaled(91,91)
-                             affiche = self.cercle(affiche)
-                             self.PIc.setPixmap(affiche)
+                        path = file.selectedFiles()[0]
+                        print("path: ", path)
+                        self.selected_photo_path = path
+                        affiche = QPixmap(path)
+                        circule = self.cercle(affiche.scaled(91, 91))
+                        self.PIc.setPixmap(circule)
+                        self.PIc.setStyleSheet("border-radius: 45px;")
                    except Exception as error:
                         print(f"Error: ",error)
-
-
-
          
 
     def mouseclick(self, event):
         if event.button() == Qt.LeftButton:
                 self.mouseClickPos = event.globalPos()
-                self.mouseMovePos = Form.pos()
+                self.mouseMovePos = Add_EMP.pos()
 
     def mousemove(self, event):
         if event.buttons() == Qt.LeftButton:
                 diff = event.globalPos() - self.mouseClickPos
-                Form.move(self.mouseMovePos + diff)
+                Add_EMP.move(self.mouseMovePos + diff)
 
-    def retranslateUi(self, Form):
+    def retranslateUi(self, Add_EMP):
         _translate = QtCore.QCoreApplication.translate
-        Form.setWindowTitle(_translate("Form", "Form"))
-        self.prenom.setPlaceholderText(_translate("Form", "Saisie Prénom"))
-        self.cin.setPlaceholderText(_translate("Form", "Saisie CIN"))
-        self.email.setPlaceholderText(_translate("Form", "Saisie Email"))
-        self.nom.setPlaceholderText(_translate("Form", "Saisie Nom"))
-        self.fonction.setPlaceholderText(_translate("Form", "Saisie Fonction"))
-        self.tache.setPlaceholderText(_translate("Form", "Saisie Tache"))
-        self.group.setPlaceholderText(_translate("Form", "Saisie Group"))
-        self.tel.setPlaceholderText(_translate("Form", "Saisie Tel"))
-        self.ajouter.setText(_translate("Form", "Ajouter"))
+        Add_EMP.setWindowTitle(_translate("Add_EMP", "Add_EMP"))
+        self.prenom.setPlaceholderText(_translate("Add_EMP", "Saisie Prénom"))
+        self.cin.setPlaceholderText(_translate("Add_EMP", "Saisie CIN"))
+        self.email.setPlaceholderText(_translate("Add_EMP", "Saisie Email"))
+        self.nom.setPlaceholderText(_translate("Add_EMP", "Saisie Nom"))
+        self.fonction.setPlaceholderText(_translate("Add_EMP", "Saisie Fonction"))
+        self.tache.setPlaceholderText(_translate("Add_EMP", "Saisie Tache"))
+        self.group.setPlaceholderText(_translate("Add_EMP", "Saisie Group"))
+        self.tel.setPlaceholderText(_translate("Add_EMP", "Saisie Tel"))
+        self.ajouter.setText(_translate("Add_EMP", "Ajouter"))
 
     def add(self):
          cin = self.cin.text()
@@ -236,38 +232,28 @@ class Ui_Form(object):
          group = self.group.text()
          tache = self.tache.text()
          fonction = self.fonction.text()
-         
-         image_path = self.PIc.pixmap().toImage()
-         buffer = QtCore.QBuffer()
-         buffer.open(QtCore.QIODevice.WriteOnly)
-         image_path.save(buffer, "PNG")
-         photo_data = buffer.data()
-
-         conn = connection.connection
-         cursor = conn.cursor()
-         query = "insert into employe (cin,nom,prenom,email,tel,groups,tache,fonction,photo) values (?,?,?,?,?,?,?,?,?)"
-
+         photo = self.selected_photo_path
+         print("path0: ", photo)
          try:
-              cursor.execute(query,(cin,nom,prenom,email,tel,group,tache,fonction,photo_data))
-              conn.commit()
-
+              conn = connection.connection
+              cursor = conn.cursor()
+              query = """INSERT INTO EMP (cin, nom, prenom, email, tel, groups, tache, fonction, photo) 
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+"""
+              cursor.execute(query, (cin, nom, prenom, email, tel, group, tache, fonction, photo))     
+              conn.commit() 
          except Exception as error:
               print("error: ",error)
-              conn.rollback()
          finally:
               cursor.close()
-              conn.close()     
-
-
-
-
-
+              conn.close()
+              self.add_widget.hide()                       
 
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    Form = QtWidgets.QWidget()
-    ui = Ui_Form()
-    ui.setupUi(Form)
-    Form.show()
+    Add_EMP = QtWidgets.QWidget()
+    ui = Ui_add()
+    ui.setupUi(Add_EMP)
+    Add_EMP.show()
     sys.exit(app.exec_())

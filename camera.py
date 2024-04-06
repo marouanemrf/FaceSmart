@@ -1,14 +1,16 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 from rapport import Ui_rapport
+# from PyQt5.QtWidgets import QCamera, QCameraViewfinder
+
 
 class Ui_camera(object):
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(905, 575)
-        MainWindow.setWindowFlag(QtCore.Qt.FramelessWindowHint)
-        MainWindow.setAttribute(QtCore.Qt.WA_TranslucentBackground)   
-        self.center = QtWidgets.QWidget(MainWindow)
+    def setupUi(self, CameWindow):
+        CameWindow.setObjectName("CameWindow")
+        CameWindow.resize(905, 575)
+        CameWindow.setWindowFlag(QtCore.Qt.FramelessWindowHint)
+        CameWindow.setAttribute(QtCore.Qt.WA_TranslucentBackground)   
+        self.center = QtWidgets.QWidget(CameWindow)
         self.center.setObjectName("center")
         self.widget = QtWidgets.QWidget(self.center)
         self.widget.setGeometry(QtCore.QRect(30, 20, 802, 501))
@@ -228,7 +230,7 @@ class Ui_camera(object):
         self.reduit.setText("")
         self.reduit.setObjectName("reduit")
         def reduir():
-            MainWindow.showMinimized()
+            CameWindow.showMinimized()
         self.reduit.clicked.connect(reduir)    
         self.cam = QtWidgets.QPushButton(self.widget)
         self.cam.setGeometry(QtCore.QRect(0, 300, 191, 35))
@@ -394,6 +396,8 @@ class Ui_camera(object):
         self.cam_proj.setText("")
         self.cam_proj.setObjectName("cam_proj")
         self.Vdo = QtWidgets.QPushButton(self.cam_wdgt)
+        self.Vdo.clicked.connect(self.full_screen)
+        self.Vdo.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\full.png'))
         self.Vdo.setGeometry(QtCore.QRect(518, 127, 20, 20))
         self.Vdo.setStyleSheet("background-color:none;")
         self.Vdo.setText("")
@@ -423,22 +427,58 @@ class Ui_camera(object):
         font.setWeight(75)
         self.lbl2.setFont(font)
         self.lbl2.setObjectName("lbl2")
-        MainWindow.setCentralWidget(self.center)
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
+        CameWindow.setCentralWidget(self.center)
+        self.menubar = QtWidgets.QMenuBar(CameWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 905, 21))
         self.menubar.setObjectName("menubar")
-        MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        CameWindow.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(CameWindow)
         self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
+        CameWindow.setStatusBar(self.statusbar)
 
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        self.retranslateUi(CameWindow)
+        QtCore.QMetaObject.connectSlotsByName(CameWindow)
 
         self.widget.mousePressEvent = self.mouseclick
         self.widget.mouseMoveEvent = self.mousemove
 
         self.rapport.clicked.connect(self.open_rapport)
+
+        # self.camera = QCamera()
+        # self.cam_view = QtWidgets.QCameraViewfinder(self.cam_wdgt)
+        # self.cam_view.setGeometry(QtCore.QRect(310, 20, 231, 131))
+        # self.cam_view.setObjectName("cam_proj")
+        # self.cam_wdgt.addWidget(self.cam_view)  
+        # self.camera.setViewfinder(self.cam_view)
+        # self.camera.start()
+
+
+    def full_screen(self):
+        self.cam_proj.setGeometry(QtCore.QRect(0, 0, 570, 401))
+        self.Vdo.move(540, 370)
+        self.Vdo.resize(30, 30)
+        self.Vdo.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\exit_full.png'))
+        self.cam_wdgt.resize(591, 401)
+        self.stat.hide()
+        self.lisetofstat.hide()
+        self.lbl2.hide()
+        self.lbl.hide()
+        self.bane_persson.hide()
+        self.listEMP.hide()
+        self.Vdo.clicked.connect(self.exit_full_screen)
+
+    def exit_full_screen(self):
+        self.cam_proj.setGeometry(QtCore.QRect(310, 20, 231, 131))
+        self.Vdo.setGeometry(QtCore.QRect(518, 127, 20, 20))
+        self.Vdo.clicked.connect(self.full_screen)
+        self.Vdo.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\full.png'))
+        self.cam_wdgt.resize(571, 401)
+        self.stat.show()
+        self.lisetofstat.show()
+        self.lbl2.show()
+        self.lbl.show()
+        self.bane_persson.show()
+        self.listEMP.show()
 
     def open_rapport(self):
         from rapport import Ui_rapport
@@ -446,43 +486,43 @@ class Ui_camera(object):
         self.work = Ui_rapport()
         self.work.setupUi(self.work_window)
         self.work_window.show()
-        MainWindow.hide()
+        CameWindow.hide()
 
     def mouseclick(self, event):
         if event.button() == Qt.LeftButton:
             self.mouseclick = event.globalPos()
-            self.mousemove = event.globalPos() - MainWindow.pos()
+            self.mousemove = event.globalPos() - CameWindow.pos()
     
     def mousemove(self, event):
         if event.buttons() == Qt.LeftButton:
                 position = event.globalPos()
                 diff = position - self.mouseclick
-                MainWindow.move(diff)
+                CameWindow.move(diff)
 
-    def retranslateUi(self, MainWindow):
+    def retranslateUi(self, CameWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.dashboard.setText(_translate("MainWindow", "Tableau de bord"))
-        self.employee.setText(_translate("MainWindow", "Employée           "))
-        self.rapport.setText(_translate("MainWindow", "Rapport               "))
-        self.chat.setText(_translate("MainWindow", "Chat                     "))
-        self.terminer.setText(_translate("MainWindow", "Quitter                 "))
-        self.label.setText(_translate("MainWindow", "Face smart project"))
-        self.recherche.setPlaceholderText(_translate("MainWindow", "Rechercher ici ..."))
-        self.userName.setText(_translate("MainWindow", "user name"))
-        self.cam.setText(_translate("MainWindow", "Camera               "))
-        self.themr.setText(_translate("MainWindow", "Théme                 "))
-        self.profil.setText(_translate("MainWindow", "Profil                    "))
-        self.label_4.setText(_translate("MainWindow", "Employée Non Performer"))
-        self.label_5.setText(_translate("MainWindow", "Personne Banné"))
-        self.label_2.setText(_translate("MainWindow", "Employée Performer"))
-        self.lbl.setText(_translate("MainWindow", "Liste Des Employées Absents"))
-        self.bane_persson.setText(_translate("MainWindow", "Ajouter"))
-        self.lbl2.setText(_translate("MainWindow", "Pour Banné Un Perssone"))
+        CameWindow.setWindowTitle(_translate("CameWindow", "CameWindow"))
+        self.dashboard.setText(_translate("CameWindow", "Tableau de bord"))
+        self.employee.setText(_translate("CameWindow", "Employée           "))
+        self.rapport.setText(_translate("CameWindow", "Rapport               "))
+        self.chat.setText(_translate("CameWindow", "Chat                     "))
+        self.terminer.setText(_translate("CameWindow", "Quitter                 "))
+        self.label.setText(_translate("CameWindow", "Face smart project"))
+        self.recherche.setPlaceholderText(_translate("CameWindow", "Rechercher ici ..."))
+        self.userName.setText(_translate("CameWindow", "user name"))
+        self.cam.setText(_translate("CameWindow", "Camera               "))
+        self.themr.setText(_translate("CameWindow", "Théme                 "))
+        self.profil.setText(_translate("CameWindow", "Profil                    "))
+        self.label_4.setText(_translate("CameWindow", "Employée Non Performer"))
+        self.label_5.setText(_translate("CameWindow", "Personne Banné"))
+        self.label_2.setText(_translate("CameWindow", "Employée Performer"))
+        self.lbl.setText(_translate("CameWindow", "Liste Des Employées Absents"))
+        self.bane_persson.setText(_translate("CameWindow", "Ajouter"))
+        self.lbl2.setText(_translate("CameWindow", "Pour Banné Un Perssone"))
 
     def open_ban(self):
          from banée import Ui_Form
-         self.work_window = QtWidgets.QMainWindow()
+         self.work_window = QtWidgets.QCameWindow()
          self.work = Ui_Form()
          self.work.setupUi(self.work_window)
          self.work_window.show()
@@ -493,8 +533,8 @@ class Ui_camera(object):
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
+    CameWindow = QtWidgets.QMainWindow()
     ui = Ui_camera()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
+    ui.setupUi(CameWindow)
+    CameWindow.show()
     sys.exit(app.exec_())

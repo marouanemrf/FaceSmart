@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt
-
+import connection
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -123,7 +123,7 @@ class Ui_Form(object):
         self.close.setGeometry(QtCore.QRect(330, 10, 13, 13))
         self.close.setStyleSheet("QPushButton {\n"
 "   background-color: rgb(255, 60, 63);\n"
-"    border-radius: 5px;\n"
+"    border-radius: 6px; border: none;\n"
 "}\n"
 "\n"
 "QPushButton:hover {\n"
@@ -139,7 +139,7 @@ class Ui_Form(object):
         self.reduit.setGeometry(QtCore.QRect(310, 10, 13, 13))
         self.reduit.setStyleSheet("QPushButton {\n"
 "    background-color: rgb(0, 255, 0);\n"
-"    border-radius: 5px;\n"
+"     border-radius: 6px; border: none;\n"
 "}\n"
 "\n"
 "QPushButton:hover {\n"
@@ -153,6 +153,8 @@ class Ui_Form(object):
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
+        self.ajouter.clicked.connect(self.update)
+        
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
@@ -166,6 +168,37 @@ class Ui_Form(object):
         self.tel.setPlaceholderText(_translate("Form", "Saisie Tel"))
         self.ajouter.setText(_translate("Form", "Modifier"))
 
+    def afficher(self, id):
+         try:
+               conn = connection.connection
+               cursor = conn.cursor()
+
+               query = "select nom, prenom, email, tel, group, tache, fonction from employe where id = ?"
+
+               cursor.execute(query, (id,))
+               result = cursor.fetchone()
+
+               if result:
+                     self.nom.setText(result[1])
+                     self.prenom.setText(result[2])
+                     self.email.setText(result[3])
+                     self.tel.setText(result[4])
+                     self.group.setText(result[5])
+                     self.tache.setText(result[6])
+                     self.fonction.setText(result[7])
+
+                     photo_data = result[8]
+                     pixmap = QtGui.QPixmap()
+                     pixmap.loadFromData(QtCore.QByteArray.fromBase64(photo_data))
+                     self.PIc.setPixmap(pixmap)
+
+               cursor.close()
+               conn.close()
+         except Exception as error:
+               print("Error: ",error)           
+
+              
+
     def mouseclick(self, event):
         if event.button() == Qt.LeftButton:
                 self.mouseClickPos = event.globalPos()
@@ -175,7 +208,43 @@ class Ui_Form(object):
         if event.buttons() == Qt.LeftButton:
                 diff = event.globalPos() - self.mouseClickPos
                 Form.move(self.mouseMovePos + diff)    
-    
+    def update(self):
+        cin = self.cin.text()
+        nom = self.nom.text()  
+        prenom = self.prenom.text()
+        email = self.email.text()
+        tel = self.tel.text()
+        group = self.group.text()
+        tache = self.tache.text()
+        fonction = self.fonction.text()
+
+        pixmap = self.PIc.pixmap()
+
+        if pixmap.isNull():
+                photo_data = None
+        else:
+                picToByte = QtCore.QByteArray()
+                buffer = QtCore.QBuffer(picToByte)
+                buffer.open(QtCore.QIODevice.WriteOnly)
+                pixmap.save(buffer, "PNG")
+                photo_data = picToByte.data()
+
+        try:
+                conn = connection.connection
+                cursor = conn.cursor()
+
+                query = "UPDATE employe SET nom=?, prenom=?, email=?, tel=?, groups=?, tache=?, fonction=?, photo=? WHERE cin=?"
+
+                cursor.execute(query, (nom, prenom, email, tel, group, tache, fonction, photo_data, cin))
+                conn.commit()
+
+                cursor.close()
+                conn.close()
+
+        except Exception as error:
+                print("error: ", error)
+                conn.rollback()
+
 
 if __name__ == "__main__":
     import sys

@@ -1,10 +1,13 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-import icon
+from PyQt5.QtCore import Qt
 
-class Ui_MainWindow(object):
+
+class Ui_rapport(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(905, 575)
+        MainWindow.setWindowFlag(QtCore.Qt.FramelessWindowHint)
+        MainWindow.setAttribute(QtCore.Qt.WA_TranslucentBackground)        
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.widget = QtWidgets.QWidget(self.centralwidget)
@@ -20,6 +23,7 @@ class Ui_MainWindow(object):
         self.menubar_2.setText("")
         self.menubar_2.setObjectName("menubar_2")
         self.dashboard = QtWidgets.QPushButton(self.widget)
+        self.dashboard.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\dashboard.png'))
         self.dashboard.setGeometry(QtCore.QRect(0, 151, 191, 35))
         font = QtGui.QFont()
         font.setBold(True)
@@ -40,11 +44,9 @@ class Ui_MainWindow(object):
 " background:#A5A5BD ;\n"
 "}\n"
 "")
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/icon/grid.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.dashboard.setIcon(icon)
         self.dashboard.setObjectName("dashboard")
         self.employee = QtWidgets.QPushButton(self.widget)
+        self.employee.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\group.png'))
         self.employee.setGeometry(QtCore.QRect(0, 187, 191, 35))
         font = QtGui.QFont()
         font.setBold(True)
@@ -65,11 +67,9 @@ class Ui_MainWindow(object):
 " background:#A5A5BD ;\n"
 "}\n"
 "")
-        icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(":/icon/users.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.employee.setIcon(icon1)
         self.employee.setObjectName("employee")
         self.rapport = QtWidgets.QPushButton(self.widget)
+        self.rapport.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\rapport.png'))
         self.rapport.setGeometry(QtCore.QRect(0, 223, 191, 35))
         font = QtGui.QFont()
         font.setBold(True)
@@ -84,11 +84,9 @@ class Ui_MainWindow(object):
 "}\n"
 "\n"
 "")
-        icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(":/icon/printer.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.rapport.setIcon(icon2)
         self.rapport.setObjectName("rapport")
         self.chat = QtWidgets.QPushButton(self.widget)
+        self.chat.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\messenger.png'))
         self.chat.setGeometry(QtCore.QRect(0, 260, 191, 35))
         font = QtGui.QFont()
         font.setBold(True)
@@ -109,11 +107,9 @@ class Ui_MainWindow(object):
 " background:#A5A5BD ;\n"
 "}\n"
 "")
-        icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap(":/icon/message-square.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.chat.setIcon(icon3)
         self.chat.setObjectName("chat")
         self.terminer = QtWidgets.QPushButton(self.widget)
+        self.terminer.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\exit.png'))
         self.terminer.setGeometry(QtCore.QRect(0, 450, 191, 35))
         font = QtGui.QFont()
         font.setBold(True)
@@ -134,9 +130,6 @@ class Ui_MainWindow(object):
 " background:#A5A5BD ;\n"
 "}\n"
 "")
-        icon4 = QtGui.QIcon()
-        icon4.addPixmap(QtGui.QPixmap(":/icon/log-out.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.terminer.setIcon(icon4)
         self.terminer.setObjectName("terminer")
         self.logo = QtWidgets.QLabel(self.widget)
         self.logo.setGeometry(QtCore.QRect(60, 5, 61, 61))
@@ -182,6 +175,7 @@ class Ui_MainWindow(object):
         self.userName.setGeometry(QtCore.QRect(672, 30, 51, 16))
         self.userName.setObjectName("userName")
         self.notification_btn = QtWidgets.QPushButton(self.widget)
+        self.notification_btn.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\not.png'))
         self.notification_btn.setGeometry(QtCore.QRect(620, 30, 21, 21))
         self.notification_btn.setStyleSheet("        QPushButton{ \n"
 "        border: none;\n"
@@ -190,11 +184,9 @@ class Ui_MainWindow(object):
 "         border: #B3D9E4;                           \n"
 "        }  ")
         self.notification_btn.setText("")
-        icon5 = QtGui.QIcon()
-        icon5.addPixmap(QtGui.QPixmap(":/icon/bell.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.notification_btn.setIcon(icon5)
         self.notification_btn.setObjectName("notification_btn")
         self.recherche_btn = QtWidgets.QPushButton(self.widget)
+        self.recherche_btn.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\glass.png'))
         self.recherche_btn.setGeometry(QtCore.QRect(550, 31, 15, 15))
         self.recherche_btn.setStyleSheet("        QPushButton{ \n"
 "        border: none;\n"
@@ -203,11 +195,9 @@ class Ui_MainWindow(object):
 "         border: #B3D9E4;                           \n"
 "        }  ")
         self.recherche_btn.setText("")
-        icon6 = QtGui.QIcon()
-        icon6.addPixmap(QtGui.QPixmap(":/icon/search.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.recherche_btn.setIcon(icon6)
         self.recherche_btn.setObjectName("recherche_btn")
         self.close_btn = QtWidgets.QPushButton(self.widget)
+        self.close_btn.clicked.connect(exit)
         self.close_btn.setGeometry(QtCore.QRect(784, 10, 10, 10))
         self.close_btn.setStyleSheet("QPushButton {\n"
 "   background-color: rgb(255, 60, 63);\n"
@@ -220,6 +210,9 @@ class Ui_MainWindow(object):
         self.close_btn.setText("")
         self.close_btn.setObjectName("close_btn")
         self.reduit = QtWidgets.QPushButton(self.widget)
+        def reduir():
+             MainWindow.showMinimized()
+        self.reduit.clicked.connect(reduir)     
         self.reduit.setGeometry(QtCore.QRect(770, 10, 10, 10))
         self.reduit.setStyleSheet("QPushButton {\n"
 "    background-color: rgb(0, 255, 0);\n"
@@ -232,6 +225,7 @@ class Ui_MainWindow(object):
         self.reduit.setText("")
         self.reduit.setObjectName("reduit")
         self.cam = QtWidgets.QPushButton(self.widget)
+        self.cam.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\camera.png'))
         self.cam.setGeometry(QtCore.QRect(0, 300, 191, 35))
         font = QtGui.QFont()
         font.setBold(True)
@@ -252,11 +246,9 @@ class Ui_MainWindow(object):
 " background:#A5A5BD ;\n"
 "}\n"
 "")
-        icon7 = QtGui.QIcon()
-        icon7.addPixmap(QtGui.QPixmap(":/icon/camera.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.cam.setIcon(icon7)
         self.cam.setObjectName("cam")
         self.themr = QtWidgets.QPushButton(self.widget)
+        self.themr.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\theme.png'))
         self.themr.setGeometry(QtCore.QRect(0, 414, 191, 35))
         font = QtGui.QFont()
         font.setBold(True)
@@ -275,11 +267,9 @@ class Ui_MainWindow(object):
 "QPushButton:pressed { \n"
 " background:#A5A5BD ;\n"
 "}")
-        icon8 = QtGui.QIcon()
-        icon8.addPixmap(QtGui.QPixmap(":/icon/moon.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.themr.setIcon(icon8)
         self.themr.setObjectName("themr")
         self.profil = QtWidgets.QPushButton(self.widget)
+        self.profil.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\user.png'))
         self.profil.setGeometry(QtCore.QRect(0, 377, 191, 35))
         font = QtGui.QFont()
         font.setBold(True)
@@ -298,11 +288,9 @@ class Ui_MainWindow(object):
 "QPushButton:pressed { \n"
 " background:#A5A5BD ;\n"
 "}")
-        icon9 = QtGui.QIcon()
-        icon9.addPixmap(QtGui.QPixmap(":/icon/user.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.profil.setIcon(icon9)
         self.profil.setObjectName("profil")
         self.hide_btn = QtWidgets.QPushButton(self.widget)
+        self.hide_btn.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\menu.png'))
         self.hide_btn.setGeometry(QtCore.QRect(150, 10, 31, 23))
         self.hide_btn.setStyleSheet("QPushButton{\n"
 "background-color:#A5A5BD;\n"
@@ -318,9 +306,6 @@ class Ui_MainWindow(object):
 " background:#A5A5BD ;\n"
 "}")
         self.hide_btn.setText("")
-        icon10 = QtGui.QIcon()
-        icon10.addPixmap(QtGui.QPixmap(":/icon/align-justify.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.hide_btn.setIcon(icon10)
         self.hide_btn.setObjectName("hide_btn")
         self.widget_2 = QtWidgets.QWidget(self.widget)
         self.widget_2.setGeometry(QtCore.QRect(220, 100, 551, 361))
@@ -405,6 +390,11 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+        self.widget.mousePressEvent = self.mouseclick
+        self.widget.mouseMoveEvent = self.mousemove
+
+        self.cam.clicked.connect(self.open_camera)
+
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
@@ -432,12 +422,34 @@ class Ui_MainWindow(object):
         item.setText(_translate("MainWindow", "New Item"))
         self.listWidget.setSortingEnabled(__sortingEnabled)
 
+    def mouseclick(self, event):
+        if event.button() == Qt.LeftButton:
+            self.mouseclick = event.globalPos()
+            self.mousemove = event.globalPos() - MainWindow.pos()
+    
+    def mousemove(self, event):
+        if event.buttons() == Qt.LeftButton:
+                position = event.globalPos()
+                diff = position - self.mouseclick
+                MainWindow.move(diff)
+
+    def open_camera(self):
+         from camera import Ui_camera
+         self.work_window = QtWidgets.QMainWindow()
+         self.work = Ui_camera()
+         self.work.setupUi(self.work_window)
+         self.work_window.show()
+         MainWindow.hide()
+
+  
+         
+
 
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
+    ui = Ui_rapport()
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
