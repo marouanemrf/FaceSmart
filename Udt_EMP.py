@@ -4,14 +4,14 @@ from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtGui import QPixmap, QPainter, QBrush, QColor, QPen, QBitmap
 import connection
 
-class Ui_add(object):
-    def setupUi(self, Add_EMP):
-        Add_EMP.setObjectName("Add_EMP")
-        Add_EMP.resize(414, 409)
-        Add_EMP.setWindowFlag(QtCore.Qt.FramelessWindowHint)
-        Add_EMP.setAttribute(QtCore.Qt.WA_TranslucentBackground)
-        self.add_widget = QtWidgets.QWidget(Add_EMP)
-        self.add_widget.setGeometry(QtCore.QRect(20, 20, 361, 301))
+class Ui_Form(object):
+    def setupUi(self, Form):
+        Form.setObjectName("Form")
+        Form.resize(464, 408)
+        Form.setWindowFlag(QtCore.Qt.FramelessWindowHint)
+        Form.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+        self.add_widget = QtWidgets.QWidget(Form)
+        self.add_widget.setGeometry(QtCore.QRect(60, 60, 361, 301))
         self.add_widget.setStyleSheet("width: 190px;\n"
 "height: 254px;\n"
 "border-radius: 20px;\n"
@@ -22,14 +22,12 @@ class Ui_add(object):
 "")
         self.add_widget.setObjectName("add_widget")
         self.PIc = QtWidgets.QLabel(self.add_widget)
+        self.PIc.mousePressEvent = self.select_pic
         self.PIc.setGeometry(QtCore.QRect(50, 40, 91, 91))
         self.PIc.setStyleSheet("background-color:  rgb(141, 141, 141);\n"
 "border-radius: 45px;")
         self.PIc.setText("")
         self.PIc.setObjectName("PIc")
-# llllllllllllllllllllllllllllll
-        self.PIc.mousePressEvent = self.select_pic
-# lllllllllllllllllllllllllllllllll
         self.prenom = QtWidgets.QLineEdit(self.add_widget)
         self.prenom.setGeometry(QtCore.QRect(200, 70, 141, 20))
         self.prenom.setStyleSheet("background-color:#e0e0e0; \n"
@@ -129,7 +127,6 @@ class Ui_add(object):
         self.close.setStyleSheet("QPushButton {\n"
 "   background-color: rgb(255, 60, 63);\n"
 "    border-radius: 6px; border: none;\n"
-" border: none;\n"
 "}\n"
 "\n"
 "QPushButton:hover {\n"
@@ -138,14 +135,13 @@ class Ui_add(object):
         self.close.setText("")
         self.close.setObjectName("close")
         def reduir():
-            Add_EMP.showMinimized()   
+            Form.showMinimized()
         self.reduit = QtWidgets.QPushButton(self.add_widget)
         self.reduit.clicked.connect(reduir)
         self.reduit.setGeometry(QtCore.QRect(310, 10, 13, 13))
         self.reduit.setStyleSheet("QPushButton {\n"
 "    background-color: rgb(0, 255, 0);\n"
-"    border-radius: 6px;\n"
-" border: none;\n"
+"     border-radius: 6px; border: none;\n"
 "}\n"
 "\n"
 "QPushButton:hover {\n"
@@ -156,31 +152,30 @@ class Ui_add(object):
         self.add_widget.mousePressEvent = self.mouseclick
         self.add_widget.mouseMoveEvent = self.mousemove
 
-        self.retranslateUi(Add_EMP)
-        QtCore.QMetaObject.connectSlotsByName(Add_EMP)
-
-        self.ajouter.clicked.connect(self.add)
-
-        self.selected_photo_path = ""
+        self.retranslateUi(Form)
+        QtCore.QMetaObject.connectSlotsByName(Form)
+        
+        self.selected_photo_path = None
+        self.ajouter.clicked.connect(self.update)    
 
     def cercle(self, pixmap):
-        diam = min(pixmap.width(), pixmap.height())
-        circle = QPixmap(diam, diam)
-        circle.fill(Qt.transparent)
+         diam = min(pixmap.width(), pixmap.height())  
+         circle = QPixmap(diam, diam)
+         circle.fill(Qt.transparent)
 
-        mask = QBitmap(diam, diam)
-        mask.fill(Qt.white)
+         mask = QBitmap(diam, diam)
+         mask.fill(Qt.white)
 
-        paint = QPainter(mask)
-        paint.setRenderHint(QPainter.Antialiasing, True)
-        paint.setBrush(Qt.black)
-        paint.drawEllipse(0, 0, diam, diam)
-        paint.end()
+         paint = QPainter(mask)
+         paint.setRenderHint(QPainter.Antialiasing, True)
+         paint.setBrush(Qt.black)
+         paint.drawEllipse(0, 0, diam, diam)
+         paint.end()
+         
+         pixmap.setMask(mask)
+         return pixmap
+    
 
-        pixmap.setMask(mask)
-
-        return pixmap
-        
     def select_pic(self, event):
          if event.button() == Qt.LeftButton:
               file = QFileDialog()
@@ -188,70 +183,106 @@ class Ui_add(object):
               if file.exec_():
                    try:
                         path = file.selectedFiles()[0]
-                        print("path: ", path)
                         self.selected_photo_path = path
                         affiche = QPixmap(path)
                         circule = self.cercle(affiche.scaled(91, 91))
                         self.PIc.setPixmap(circule)
                         self.PIc.setStyleSheet("border-radius: 45px;")
                    except Exception as error:
-                        print(f"Error: ",error)
-         
+                        print("Erreur: ",error)     
 
+
+        
+    def retranslateUi(self, Form):
+        _translate = QtCore.QCoreApplication.translate
+        self.affiche(self.cin)
+        Form.setWindowTitle(_translate("Form", "Form"))
+        self.prenom.setPlaceholderText(_translate("Form", "Saisie Prénom"))
+        self.cin.setPlaceholderText(_translate("Form", "Saisie CIN"))
+        self.email.setPlaceholderText(_translate("Form", "Saisie Email"))
+        self.nom.setPlaceholderText(_translate("Form", "Saisie Nom"))
+        self.fonction.setPlaceholderText(_translate("Form", "Saisie Fonction"))
+        self.tache.setPlaceholderText(_translate("Form", "Saisie Tache"))
+        self.group.setPlaceholderText(_translate("Form", "Saisie Group"))
+        self.tel.setPlaceholderText(_translate("Form", "Saisie Tel"))
+        self.ajouter.setText(_translate("Form", "Modifier"))
+
+    def affiche(self, cin):  
+         try:    
+                conn = connection.connection
+                cursor = conn.cursor()
+
+                query = "select cin, nom, prenom, email, tel, fonction, tache, groups, photo from EMP where cin = ? "  
+
+                cursor.execute(query, (cin, ))
+                result = cursor.fetchone()
+                
+                if result:
+                        self.cin.setText(cin)
+                        self.nom.setText(result[1])
+                        self.prenom.setText(result[2])
+                        self.email.setText(result[3])
+                        self.tel.setText(result[4])
+                        self.fonction.setText(result[5])
+                        self.tache.setText(result[6])
+                        self.group.setText(result[7])
+                        photo_path = result[8]
+
+                        if photo_path:
+                             affiche = QPixmap(photo_path)
+                             circuler = self.cercle(affiche.scaled(91, 91))
+                             self.PIc.setPixmap(circuler)
+                             self.PIc.setStyleSheet("border-radius: 45px;")
+                             self.PIc.setScaledContents(True)
+
+                cursor.close()        
+
+         except Exception as error:
+              print("Erreur: ", error)
+
+    def update(self):
+         try:
+              cin = self.cin.text()
+              nom = self.nom.text()
+              prenom = self.prenom.text()
+              email = self.email.text()
+              tel = self.tel.text()
+              fonction = self.fonction.text()
+              tache = self.tache.text()
+              group = self.group.text()
+              photo = self.selected_photo_path
+              
+              conn = connection.connection
+              cursor = conn.cursor()
+              query = "update EMP set cin = ?, nom = ?, prenom = ?, email = ?, tel = ?, fonction = ?, tache = ?, groups = ?, photo = ? where cin = ?;"
+              values = (cin, nom, prenom, email, tel, fonction, tache, group, photo)
+              print("values: ", values)
+              cursor.execute(query, (cin, nom, prenom, email, tel, fonction, tache, group, photo, cin))
+
+              conn.commit()
+              print("Update successful")
+         except Exception as error:
+              print("erreur: ",error)
+         finally:
+              cursor.close()
+              conn.close()
+              self.add_widget.hide()                
+       
     def mouseclick(self, event):
         if event.button() == Qt.LeftButton:
                 self.mouseClickPos = event.globalPos()
-                self.mouseMovePos = Add_EMP.pos()
+                self.mouseMovePos = Form.pos()
 
     def mousemove(self, event):
         if event.buttons() == Qt.LeftButton:
                 diff = event.globalPos() - self.mouseClickPos
-                Add_EMP.move(self.mouseMovePos + diff)
-
-    def retranslateUi(self, Add_EMP):
-        _translate = QtCore.QCoreApplication.translate
-        Add_EMP.setWindowTitle(_translate("Add_EMP", "Add_EMP"))
-        self.prenom.setPlaceholderText(_translate("Add_EMP", "Saisie Prénom"))
-        self.cin.setPlaceholderText(_translate("Add_EMP", "Saisie CIN"))
-        self.email.setPlaceholderText(_translate("Add_EMP", "Saisie Email"))
-        self.nom.setPlaceholderText(_translate("Add_EMP", "Saisie Nom"))
-        self.fonction.setPlaceholderText(_translate("Add_EMP", "Saisie Fonction"))
-        self.tache.setPlaceholderText(_translate("Add_EMP", "Saisie Tache"))
-        self.group.setPlaceholderText(_translate("Add_EMP", "Saisie Group"))
-        self.tel.setPlaceholderText(_translate("Add_EMP", "Saisie Tel"))
-        self.ajouter.setText(_translate("Add_EMP", "Ajouter"))
-
-    def add(self):
-         cin = self.cin.text()
-         nom = self.nom.text()
-         prenom = self.prenom.text()
-         email = self.email.text()
-         tel = self.tel.text()
-         group = self.group.text()
-         tache = self.tache.text()
-         fonction = self.fonction.text()
-         photo = self.selected_photo_path
-         print("path0: ", photo)
-         try:
-              conn = connection.connection
-              cursor = conn.cursor()
-              query = """INSERT INTO EMP (cin, nom, prenom, email, tel, groups, tache, fonction, photo) 
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-"""
-              cursor.execute(query, (cin, nom, prenom, email, tel, group, tache, fonction, photo))     
-              conn.commit() 
-         except Exception as error:
-              print("error: ",error)
-         finally:
-              cursor.close()
-              conn.close()
-              self.add_widget.hide()                       
+                Form.move(self.mouseMovePos + diff)    
 
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    Add_EMP = QtWidgets.QWidget()
-    ui = Ui_add()
-    ui.setupUi(Add_EMP)
-    Add_EMP.show()
+    Form = QtWidgets.QWidget()
+    ui = Ui_Form()
+    ui.setupUi(Form)
+    Form.show()
     sys.exit(app.exec_())

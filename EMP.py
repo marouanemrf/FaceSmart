@@ -1,5 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPixmap, QPainter, QBrush, QColor, QPen, QBitmap
 import connection
 class Ui_EMP(object):
     def setupUi(self, EMP):
@@ -345,6 +346,44 @@ class Ui_EMP(object):
         self.cam.clicked.connect(self.open_camera)
         self.Ajouter.clicked.connect(self.add_emp)
         self.select_emp()
+        
+        self.manager(1)
+
+
+    def rechercher(self):
+        pass
+
+    def cercle(self, pixmap):
+        diam = min(pixmap.width(), pixmap.height())
+        circle = QPixmap(diam, diam)
+        circle.fill(Qt.transparent)
+
+        mask = QBitmap(diam, diam)
+        mask.fill(Qt.white)
+
+        paint = QPainter(mask)
+        paint.setRenderHint(QPainter.Antialiasing, True)
+        paint.setBrush(Qt.black)
+        paint.drawEllipse(0, 0, diam, diam)
+        paint.end()
+
+        pixmap.setMask(mask)
+        return pixmap 
+     
+    def manager(self,id):
+        conn = connection.connection
+        cursor = conn.cursor()
+
+        query = "select nom, photo from log_in where id = ?;"
+        cursor.execute(query, (id, ))
+        utilisateur = cursor.fetchone()
+
+        if utilisateur:
+            nom , photo = utilisateur
+            self.userName.setText(nom)
+            pixmap = QPixmap(photo)
+            circele = self.cercle(pixmap.scaled(40, 40)) 
+            self.user_pic.setPixmap(circele)
 
 
     def mouseclick(self, event):
@@ -399,6 +438,12 @@ class Ui_EMP(object):
         self.ui = Ui_add()
         self.ui.setupUi(self.work_window)
         self.work_window.show()  
+        self.select_emp()  
+        def close():
+            self.work_window.hide()
+        self.ui.close.clicked.connect(close)    
+        
+
 
     def select_emp(self):
         conn =  connection.connection
@@ -425,34 +470,59 @@ select cin, nom, prenom, fonction, date_debut from EMP;
             view = QtWidgets.QPushButton()
             view.setStyleSheet("background-color: none; border: none;")
             view.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\view.png'))
-            view.clicked.connect(self.view_emp)
+            view.clicked.connect(self.open_view)
 
             delete = QtWidgets.QPushButton() 
             delete.setStyleSheet("background-color: none; border: none;")
             delete.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\bin.png'))
-            view.clicked.connect(self.delete_emp)
+            delete.clicked.connect(self.delete_emp)
 
             layout.addWidget(view, 0, 0, alignment=QtCore.Qt.AlignCenter)
             layout.addWidget(delete, 0, 1, alignment=QtCore.Qt.AlignCenter)
             self.EMPTable.setCellWidget(row_num, 5, widget)
 
-    def view_emp():
-        pass
+    def open_view(self):
+        from Udt_EMP import Ui_Form
 
-    def delete_emp(self):
-        cin = self.EMPTable.item(0)
-        conn = connection.connection
-        cursor = conn.cursor()
+        self.workSpace = QtWidgets.QMainWindow()
+        self.ui = Ui_Form()
+        self.ui.setupUi(self.workSpace)
+        self.workSpace.show()
 
-        query = """
-DELETE FROM EMP WHERE cin = %s;
-"""     
-        cursor.execute(query, (cin, ))
+        def hide():
+            self.workSpace.hide()
 
-        conn.commit()
+        self.ui.close.clicked.connect(hide)
 
-        self.select_emp()        
+        line = self.EMPTable.currentRow()
+        cin_item = self.EMPTable.item(line, 0)
+        print("cin_item: ", cin_item)
+
+        if cin_item is not None:
+            
+            cin = cin_item.text()
+            print("cin: ", cin)
+            self.ui.affiche(cin)
+            self.select_emp()
         
+    def delete_emp(self): 
+        try:
+            line = self.EMPTable.currentRow()
+            if line != -1:
+                cin_item = self.EMPTable.item(line, 0)
+                print("cin: ", cin_item)
+                if cin_item is not None:  
+                    cin = cin_item.text()
+                    print(cin)
+                    conn = connection.connection
+                    cursor = conn.cursor()
+                    query = "DELETE FROM EMP WHERE cin = ?;"
+                    cursor.execute(query, (cin, ))
+                    conn.commit()
+                    self.select_emp()
+        except Exception as error:
+                print("erreur: ", error)
+
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
