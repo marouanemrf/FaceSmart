@@ -149,6 +149,9 @@ class Ui_EMP(object):
         self.userName = QtWidgets.QLabel(self.widget)
         self.userName.setGeometry(QtCore.QRect(672, 30, 51, 16))
         self.userName.setObjectName("userName")
+        self.userName.setStyleSheet("background-color: rgba(0,0, 0,0); \n"
+                              "border:none;\n"
+                              "font-weight: bold;")
         self.notification_btn = QtWidgets.QPushButton(self.widget)
         self.notification_btn.setGeometry(QtCore.QRect(620, 30, 21, 21))
         self.notification_btn.setStyleSheet("        QPushButton{ \n"
@@ -367,6 +370,8 @@ class Ui_EMP(object):
         paint.drawEllipse(0, 0, diam, diam)
         paint.end()
 
+        self.hide_btn.clicked.connect(self.hide)
+
         pixmap.setMask(mask)
         return pixmap 
      
@@ -522,6 +527,70 @@ select cin, nom, prenom, fonction, date_debut from EMP;
                     self.select_emp()
         except Exception as error:
                 print("erreur: ", error)
+
+    def hide(self):
+        _translate = QtCore.QCoreApplication.translate
+        
+        x_pos = (self.widget.width() - 605) // 2
+        y_pos = (self.widget.height() - 381) // 2
+        self.EMPWidget.setGeometry(QtCore.QRect(x_pos, y_pos, 650, 400))
+        self.Ajouter.setGeometry(QtCore.QRect(504, 30, 111, 29))
+        self.EMPTable.setGeometry(QtCore.QRect(20, 80, 616, 350))
+        self.menubar_2.setGeometry(QtCore.QRect(0, 0, 50, 501))
+        self.hide_btn.setGeometry(QtCore.QRect(5, 5, 31, 23))
+        self.dashboard.setGeometry(QtCore.QRect(0, 151, 49, 35))
+        self.dashboard.setText(_translate("EMP", ""))
+        self.employee.setGeometry(QtCore.QRect(0, 187, 49, 35))
+        self.employee.setText(_translate("EMP", ""))
+        self.rapport.setGeometry(QtCore.QRect(0, 223, 49, 35))
+        self.rapport.setText(_translate("EMP", ""))
+        self.cam.setGeometry(QtCore.QRect(0, 260, 49, 35))
+        self.cam.setText(_translate("EMP", ""))
+        self.profil.setGeometry(QtCore.QRect(0, 377, 49, 35))
+        self.profil.setText(_translate("EMP", ""))
+        self.themr.setGeometry(QtCore.QRect(0, 414, 49, 35))
+        self.themr.setText(_translate("EMP", ""))
+        self.terminer.setGeometry(QtCore.QRect(0, 450, 49, 35))
+        self.terminer.setText(_translate("EMP", ""))
+        self.recherche.setGeometry(QtCore.QRect(200, 30, 350, 20))
+        self.recherche_btn.setGeometry(QtCore.QRect(495, 31, 15, 15))
+        self.notification_btn.setGeometry(QtCore.QRect(590, 30, 21, 21))
+        self.userName.setGeometry(QtCore.QRect(650, 30, 51, 16))
+        self.label.hide()
+        self.logo.hide()
+
+        self.hide_btn.clicked.connect(self.back)
+
+    def back(self):
+        _translate = QtCore.QCoreApplication.translate
+        self.EMPWidget.setGeometry(QtCore.QRect(194, 90, 605, 381))
+        self.Ajouter.setGeometry(QtCore.QRect(494, 30, 91, 23)) 
+        self.EMPTable.setGeometry(QtCore.QRect(0, 80, 601, 301))
+        self.menubar_2.setGeometry(QtCore.QRect(0, 0, 191, 501))
+        self.hide_btn.setGeometry(QtCore.QRect(150, 10, 31, 23))
+        self.dashboard.setText(_translate("EMP", "Tableau de bord"))
+        self.dashboard.setGeometry(QtCore.QRect(0, 151, 191, 35))
+        self.employee.setGeometry(QtCore.QRect(0, 187, 191, 35))
+        self.employee.setText(_translate("EMP", "Employée           "))
+        self.rapport.setText(_translate("EMP", "Rapport               "))
+        self.rapport.setGeometry(QtCore.QRect(0, 223, 191, 35))
+        self.cam.setGeometry(QtCore.QRect(0, 260, 191, 35))
+        self.cam.setText(_translate("EMP", "Camera               "))
+        self.profil.setText(_translate("EMP", "Profil                    "))
+        self.profil.setGeometry(QtCore.QRect(0, 377, 191, 35))
+        self.themr.setText(_translate("EMP", "Théme                 "))
+        self.themr.setGeometry(QtCore.QRect(0, 414, 191, 35))
+        self.terminer.setText(_translate("EMP", "Quitter                 "))
+        self.terminer.setGeometry(QtCore.QRect(0, 450, 191, 35))
+        self.recherche.setGeometry(QtCore.QRect(270, 30, 311, 20))
+        self.recherche_btn.setGeometry(QtCore.QRect(550, 31, 15, 15))
+        self.notification_btn.setGeometry(QtCore.QRect(620, 30, 21, 21))
+        self.userName.setGeometry(QtCore.QRect(672, 30, 51, 16))
+        self.label.show()
+        self.logo.show()
+        self.hide_btn.clicked.connect(self.hide)
+        
+       
 
 if __name__ == "__main__":
     import sys
