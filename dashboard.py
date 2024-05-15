@@ -4,16 +4,23 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 import connection
 
-class Ui_Rapport(object):
-    def setupUi(self, Rapport):
-        Rapport.setObjectName("Rapport")
-        Rapport.resize(905, 575)
-        Rapport.setWindowFlag(QtCore.Qt.FramelessWindowHint)
-        Rapport.setAttribute(QtCore.Qt.WA_TranslucentBackground)
-        self.center = QtWidgets.QWidget(Rapport)
-        self.center.setObjectName("center")
-        self.widget = QtWidgets.QWidget(self.center)
-        self.widget.setGeometry(QtCore.QRect(40, 10, 802, 501))
+class RechercgeManager(QObject):
+    rechercheChange = pyqtSignal(str)
+    def __init__(self):
+        super().__init__()
+  
+class Ui_dash(object):
+    def __init__(self):
+        super().__init__()
+        self.recherche_manager = RechercgeManager()   
+
+    def setupUi(self, Dash):
+        Dash.setObjectName("Dash")
+        Dash.resize(851, 548)
+        Dash.setWindowFlag(QtCore.Qt.FramelessWindowHint)
+        Dash.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+        self.widget = QtWidgets.QWidget(Dash)
+        self.widget.setGeometry(QtCore.QRect(20, 20, 802, 501))
         self.widget.setStyleSheet("background:rgb(255, 255, 255);\n"
 "border-radius: 7px;\n"
 "")
@@ -32,22 +39,13 @@ class Ui_Rapport(object):
         font.setWeight(75)
         self.dashboard.setFont(font)
         self.dashboard.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.dashboard.setStyleSheet("QPushButton#dashboard{\n"
-"background-color:#A5A5BD;\n"
-"border:none;\n"
-"color:#000000;\n"
-"}\n"
-"QPushButton#dashboard:hover{\n"
+        self.dashboard.setStyleSheet("\n"
 "background-color:#D9D9D9;\n"
-"border-radius: 5px;\n"
-"text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);\n"
-"}\n"
-"QPushButton#dashboard:pressed { \n"
-" background:#A5A5BD ;\n"
-"}\n"
-"")
+"border-radius: 0px;\n"
+"text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);")
         self.dashboard.setObjectName("dashboard")
         self.employee = QtWidgets.QPushButton(self.widget)
+        self.employee.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\group.png'))
         self.employee.setGeometry(QtCore.QRect(0, 187, 191, 35))
         font = QtGui.QFont()
         font.setBold(True)
@@ -69,24 +67,33 @@ class Ui_Rapport(object):
 "}\n"
 "\n"
 "")
-        self.employee.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\group.png'))
         self.employee.setObjectName("employee")
         self.rapport = QtWidgets.QPushButton(self.widget)
+        self.rapport.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\rapport.png'))
         self.rapport.setGeometry(QtCore.QRect(0, 223, 191, 35))
         font = QtGui.QFont()
         font.setBold(True)
         font.setWeight(75)
         self.rapport.setFont(font)
         self.rapport.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.rapport.setStyleSheet("\n"
+        self.rapport.setStyleSheet("QPushButton{\n"
+"background-color:#A5A5BD;\n"
+"border:none;\n"
+"color:#000000;\n"
+"}\n"
+"QPushButton:hover{\n"
 "background-color:#D9D9D9;\n"
-"border-radius: 0px;\n"
+"border-radius: 5px;\n"
 "text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);\n"
-"\n"
+"}\n"
+"QPushButton:pressed { \n"
+" background:#A5A5BD ;\n"
+"}\n"
 "")
-        self.rapport.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\rapport.png'))
+
         self.rapport.setObjectName("rapport")
         self.terminer = QtWidgets.QPushButton(self.widget)
+        self.terminer.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\exit.png'))
         self.terminer.setGeometry(QtCore.QRect(0, 450, 191, 35))
         font = QtGui.QFont()
         font.setBold(True)
@@ -107,7 +114,6 @@ class Ui_Rapport(object):
 " background:#A5A5BD ;\n"
 "}\n"
 "")
-        self.terminer.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\exit.png'))
         self.terminer.setObjectName("terminer")
         self.logo = QtWidgets.QLabel(self.widget)
         self.logo.setGeometry(QtCore.QRect(60, 5, 61, 61))
@@ -153,6 +159,7 @@ class Ui_Rapport(object):
         self.userName.setGeometry(QtCore.QRect(672, 30, 51, 16))
         self.userName.setObjectName("userName")
         self.notification_btn = QtWidgets.QPushButton(self.widget)
+        self.notification_btn.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\not.png'))   
         self.notification_btn.setGeometry(QtCore.QRect(620, 30, 21, 21))
         self.notification_btn.setStyleSheet("        QPushButton{ \n"
 "        border: none;\n"
@@ -161,9 +168,9 @@ class Ui_Rapport(object):
 "         border: #B3D9E4;                           \n"
 "        }  ")
         self.notification_btn.setText("")
-        self.notification_btn.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\not.png'))   
         self.notification_btn.setObjectName("notification_btn")
         self.recherche_btn = QtWidgets.QPushButton(self.widget)
+        self.recherche_btn.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\glass.png'))
         self.recherche_btn.setGeometry(QtCore.QRect(550, 31, 15, 15))
         self.recherche_btn.setStyleSheet("        QPushButton{ \n"
 "        border: none;\n"
@@ -172,7 +179,6 @@ class Ui_Rapport(object):
 "         border: #B3D9E4;                           \n"
 "        }  ")
         self.recherche_btn.setText("")
-        self.recherche_btn.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\glass.png'))
         self.recherche_btn.setObjectName("recherche_btn")
         self.close_btn = QtWidgets.QPushButton(self.widget)
         self.close_btn.clicked.connect(exit)
@@ -188,6 +194,9 @@ class Ui_Rapport(object):
         self.close_btn.setText("")
         self.close_btn.setObjectName("close_btn")
         self.reduit = QtWidgets.QPushButton(self.widget)
+        def reduit():
+             Dash.showMinimized()
+        self.reduit.clicked.connect(reduit)
         self.reduit.setGeometry(QtCore.QRect(770, 10, 10, 10))
         self.reduit.setStyleSheet("QPushButton {\n"
 "    background-color: rgb(0, 255, 0);\n"
@@ -199,10 +208,8 @@ class Ui_Rapport(object):
 "}")
         self.reduit.setText("")
         self.reduit.setObjectName("reduit")
-        def reduit():
-            Rapport.showMinimized()
-        self.reduit.clicked.connect(reduit)    
         self.cam = QtWidgets.QPushButton(self.widget)
+        self.cam.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\camera.png'))
         self.cam.setGeometry(QtCore.QRect(0, 260, 191, 35))
         font = QtGui.QFont()
         font.setBold(True)
@@ -222,9 +229,9 @@ class Ui_Rapport(object):
 "QPushButton:pressed { \n"
 " background:#A5A5BD ;\n"
 "}")
-        self.cam.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\camera.png'))
         self.cam.setObjectName("cam")
         self.themr = QtWidgets.QPushButton(self.widget)
+        self.themr.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\theme.png'))
         self.themr.setGeometry(QtCore.QRect(0, 414, 191, 35))
         font = QtGui.QFont()
         font.setBold(True)
@@ -243,7 +250,6 @@ class Ui_Rapport(object):
 "QPushButton:pressed { \n"
 " background:#A5A5BD ;\n"
 "}")
-        self.themr.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\theme.png'))
         self.themr.setObjectName("themr")
         self.profil = QtWidgets.QPushButton(self.widget)
         self.profil.setGeometry(QtCore.QRect(0, 377, 191, 35))
@@ -282,75 +288,83 @@ class Ui_Rapport(object):
 " background:#A5A5BD ;\n"
 "}")
         self.hide_btn.setText("")
-        self.hide_btn.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\menu.png'))
         self.hide_btn.setObjectName("hide_btn")
-        self.rapportwdgt = QtWidgets.QWidget(self.widget)
-        self.rapportwdgt.setGeometry(QtCore.QRect(196, 80, 601, 411))
+        self.hide_btn.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\menu.png'))
+        self.widget_2 = QtWidgets.QWidget(self.widget)
+        self.widget_2.setGeometry(QtCore.QRect(200, 90, 591, 381))
+        self.widget_2.setObjectName("widget_2")
+        self.label_2 = QtWidgets.QLabel(self.widget_2)
+        self.label_2.setGeometry(QtCore.QRect(40, 30, 111, 91))
+        self.label_2.setStyleSheet("background-color: rgb(215, 188, 255);")
+        self.label_2.setText("")
+        self.label_2.setObjectName("label_2")
+        self.label_3 = QtWidgets.QLabel(self.widget_2)
+        self.label_3.setGeometry(QtCore.QRect(40, 140, 111, 91))
+        self.label_3.setStyleSheet("background-color: rgb(215, 188, 255);")
+        self.label_3.setText("")
+        self.label_3.setObjectName("label_3")
+        self.label_4 = QtWidgets.QLabel(self.widget_2)
+        self.label_4.setGeometry(QtCore.QRect(40, 260, 111, 91))
+        self.label_4.setStyleSheet("background-color: rgb(215, 188, 255);")
+        self.label_4.setText("")
+        self.label_4.setObjectName("label_4")
+        self.label_5 = QtWidgets.QLabel(self.widget_2)
+        self.label_5.setGeometry(QtCore.QRect(63, 50, 71, 16))
         font = QtGui.QFont()
         font.setPointSize(10)
-        self.rapportwdgt.setFont(font)
-        self.rapportwdgt.setObjectName("rapportwdgt")
-        self.addraport = QtWidgets.QPushButton(self.rapportwdgt)
-        self.addraport.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\add.png'))
-        self.addraport.setGeometry(QtCore.QRect(494, 220, 90, 23))
-        font = QtGui.QFont()
         font.setBold(True)
         font.setWeight(75)
-        self.addraport.setFont(font)
-        self.addraport.setStyleSheet("QPushButton{\n"
-"background-color:#A5A5BD;\n"
-"border:none;\n"
-"color:#000000;\n"
-"}\n"
-"QPushButton:hover{\n"
-"background-color:#D9D9D9;\n"
-"border-radius: 5px;\n"
-"text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);\n"
-"}\n"
-"QPushButton:pressed { \n"
-" background:#A5A5BD ;\n"
-"}")
-        self.addraport.setObjectName("addraport")
-        self.addprojet = QtWidgets.QPushButton(self.rapportwdgt)
-        self.addprojet.setGeometry(QtCore.QRect(494, 10, 90, 23))
+        self.label_5.setFont(font)
+        self.label_5.setStyleSheet("background-color: none;")
+        self.label_5.setObjectName("label_5")
+        self.label_6 = QtWidgets.QLabel(self.widget_2)
+        self.label_6.setGeometry(QtCore.QRect(72, 160, 71, 16))
         font = QtGui.QFont()
+        font.setPointSize(10)
         font.setBold(True)
         font.setWeight(75)
-        self.addprojet.setFont(font)
-        self.addprojet.setStyleSheet("QPushButton{\n"
-"background-color:#A5A5BD;\n"
-"border:none;\n"
-"color:#000000;\n"
-"}\n"
-"QPushButton:hover{\n"
-"background-color:#D9D9D9;\n"
-"border-radius: 5px;\n"
-"text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);\n"
-"}\n"
-"QPushButton:pressed { \n"
-" background:#A5A5BD ;\n"
-"}")
-        self.addprojet.setObjectName("addprojet")
-        self.addprojet.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\add.png'))
-        self.label_2 = QtWidgets.QLabel(self.rapportwdgt)
-        self.label_2.setGeometry(QtCore.QRect(10, 220, 131, 16))
+        self.label_6.setFont(font)
+        self.label_6.setStyleSheet("background-color: none;")
+        self.label_6.setObjectName("label_6")
+        self.label_7 = QtWidgets.QLabel(self.widget_2)
+        self.label_7.setGeometry(QtCore.QRect(70, 280, 71, 16))
         font = QtGui.QFont()
-        font.setPointSize(9)
+        font.setPointSize(10)
         font.setBold(True)
         font.setWeight(75)
-        self.label_2.setFont(font)
-        self.label_2.setObjectName("label_2")
-        self.label_3 = QtWidgets.QLabel(self.rapportwdgt)
-        self.label_3.setGeometry(QtCore.QRect(10, 10, 91, 16))
+        self.label_7.setFont(font)
+        self.label_7.setStyleSheet("background-color: none;")
+        self.label_7.setObjectName("label_7")
+        self.nmb_emp = QtWidgets.QLabel(self.widget_2)
+        self.nmb_emp.setGeometry(QtCore.QRect(86, 80, 21, 21))
         font = QtGui.QFont()
-        font.setPointSize(9)
+        font.setPointSize(15)
         font.setBold(True)
         font.setWeight(75)
-        self.label_3.setFont(font)
-        self.label_3.setObjectName("label_3")
-        self.listProjet = QtWidgets.QTableWidget(self.rapportwdgt)
-        self.listProjet.setGeometry(QtCore.QRect(90, 50, 420, 131))
-        self.listProjet.setStyleSheet("QTableWidget {\n"
+        self.nmb_emp.setFont(font)
+        self.nmb_emp.setStyleSheet("background-color: none")
+        self.nmb_emp.setObjectName("nmb_emp")
+        self.nmb_prj = QtWidgets.QLabel(self.widget_2)
+        self.nmb_prj.setGeometry(QtCore.QRect(84, 190, 21, 21))
+        font = QtGui.QFont()
+        font.setPointSize(15)
+        font.setBold(True)
+        font.setWeight(75)
+        self.nmb_prj.setFont(font)
+        self.nmb_prj.setStyleSheet("background-color: none")
+        self.nmb_prj.setObjectName("nmb_prj")
+        self.nmb_rap = QtWidgets.QLabel(self.widget_2)
+        self.nmb_rap.setGeometry(QtCore.QRect(85, 310, 21, 21))
+        font = QtGui.QFont()
+        font.setPointSize(15)
+        font.setBold(True)
+        font.setWeight(75)
+        self.nmb_rap.setFont(font)
+        self.nmb_rap.setStyleSheet("background-color: none")
+        self.nmb_rap.setObjectName("nmb_rap")
+        self.listadmin = QtWidgets.QTableWidget(self.widget_2)
+        self.listadmin.setGeometry(QtCore.QRect(260, 90, 320, 230))
+        self.listadmin.setStyleSheet("QTableWidget {\n"
 "    background-color: rgb(226, 226, 226);\n"
 "    border-radius: 10px; \n"
 "}\n"
@@ -358,62 +372,45 @@ class Ui_Rapport(object):
 "QTableWidget::item {\n"
 "    background-color: rgb(176, 111, 255); \n"
 "}")
-        self.listProjet.setObjectName("listProjet")
-        self.listProjet.setColumnCount(4)
-        self.listProjet.setRowCount(0)
+        self.listadmin.setObjectName("listadmin")
+        self.listadmin.setColumnCount(3)
+        self.listadmin.setRowCount(0)
         item = QtWidgets.QTableWidgetItem()
-        self.listProjet.setHorizontalHeaderItem(0, item)
+        self.listadmin.setHorizontalHeaderItem(0, item)
         item = QtWidgets.QTableWidgetItem()
-        self.listProjet.setHorizontalHeaderItem(1, item)
+        self.listadmin.setHorizontalHeaderItem(1, item)
         item = QtWidgets.QTableWidgetItem()
-        self.listProjet.setHorizontalHeaderItem(2, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.listProjet.setHorizontalHeaderItem(3, item)
-        self.lisrapport = QtWidgets.QTableWidget(self.rapportwdgt)
-        self.lisrapport.setGeometry(QtCore.QRect(136, 260, 315, 131))
-        self.lisrapport.setStyleSheet("QTableWidget {\n"
-"    background-color: rgb(226, 226, 226);\n"
-"    border-radius: 10px; \n"
-"}\n"
-"\n"
-"QTableWidget::item {\n"
-"    background-color: rgb(176, 111, 255); \n"
-"}")
-        self.lisrapport.setObjectName("lisrapport")
-        self.lisrapport.setColumnCount(3)
-        self.lisrapport.setRowCount(0)
-        item = QtWidgets.QTableWidgetItem()
-        self.lisrapport.setHorizontalHeaderItem(0, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.lisrapport.setHorizontalHeaderItem(1, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.lisrapport.setHorizontalHeaderItem(2, item)
-        Rapport.setCentralWidget(self.center)
-        self.menubar = QtWidgets.QMenuBar(Rapport)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 905, 21))
-        self.menubar.setObjectName("menubar")
-        Rapport.setMenuBar(self.menubar)
-        self.statusbar = QtWidgets.QStatusBar(Rapport)
-        self.statusbar.setObjectName("statusbar")
-        Rapport.setStatusBar(self.statusbar)
+        self.listadmin.setHorizontalHeaderItem(2, item)
+        self.label_8 = QtWidgets.QLabel(self.widget_2)
+        self.label_8.setGeometry(QtCore.QRect(260, 50, 151, 31))
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        font.setBold(True)
+        font.setItalic(False)
+        font.setWeight(75)
+        self.label_8.setFont(font)
+        self.label_8.setObjectName("label_8")
 
-        self.retranslateUi(Rapport)
-        QtCore.QMetaObject.connectSlotsByName(Rapport)
+        self.retranslateUi(Dash)
+        QtCore.QMetaObject.connectSlotsByName(Dash)
+
+        self.recherche_btn.clicked.connect(self.rechercher)
+        self.recherche_manager.rechercheChange.connect(self.rechercher)
+        self.recherche.textChanged.connect(self.recherche_manager.rechercheChange.emit)
+         
+        self.employee.clicked.connect(lambda: self.open_emp(self.name, self.pic_path))
+        self.rapport.clicked.connect(lambda: self.open_rappot(self.name, self.pic_path))
+        self.cam.clicked.connect(lambda: self.open_camera(self.name, self.pic_path))
+        self.profil.clicked.connect(lambda: self.open_profile(self.name, self.pic_path))
+        self.terminer.clicked.connect(self.close)
 
         self.name = None
         self.pic_path = None
 
-        self.dashboard.clicked.connect(lambda: self.open_Dash(self.name, self.pic_path))
-        self.employee.clicked.connect(lambda: self.open_emp(self.name, self.pic_path))
-        self.cam.clicked.connect(lambda: self.open_camera(self.name, self.pic_path))
-        self.terminer.clicked.connect(self.close)
-        self.profil.clicked.connect(lambda: self.open_profile(self.name, self.pic_path))
-
-        self.addprojet.clicked.connect(self.add_proj)
-        self.addraport.clicked.connect(self.add_rap)
-
-        self.afficher_proj()
-        self.afficher_rapp()
+        self.admin()
+        self.emp_count() 
+        self.rapport_count()
+        self.project_count()
 
     def set_user_info(self, name, pic_path):
          self.name = name
@@ -453,163 +450,93 @@ class Ui_Rapport(object):
 
         return result
 
-
-    def retranslateUi(self, Rapport):
+    def retranslateUi(self, Dash):
         _translate = QtCore.QCoreApplication.translate
-        Rapport.setWindowTitle(_translate("Rapport", "Rapport"))
-        self.dashboard.setText(_translate("Rapport", "Tableau de bord"))
-        self.employee.setText(_translate("Rapport", "Employée           "))
-        self.rapport.setText(_translate("Rapport", "Rapport               "))
-        self.terminer.setText(_translate("Rapport", "Quitter                 "))
-        self.label.setText(_translate("Rapport", "Face smart project"))
-        self.recherche.setPlaceholderText(_translate("Rapport", "Rechercher ici ..."))
-        self.userName.setText(_translate("Rapport", "user name"))
-        self.cam.setText(_translate("Rapport", "Camera               "))
-        self.themr.setText(_translate("Rapport", "Théme                 "))
-        self.profil.setText(_translate("Rapport", "Profil                    "))
-        self.addraport.setText(_translate("Rapport", "Rapport"))
-        self.addprojet.setText(_translate("Rapport", "Projet"))
-        self.label_2.setText(_translate("Rapport", "List du rapport"))
-        self.label_3.setText(_translate("Rapport", "List du projet"))
-        item = self.listProjet.horizontalHeaderItem(0)
-        item.setText(_translate("Rapport", "Nom"))
-        item = self.listProjet.horizontalHeaderItem(1)
-        item.setText(_translate("Rapport", "Date début"))
-        item = self.listProjet.horizontalHeaderItem(2)
-        item.setText(_translate("Rapport", "Date fin"))
-        item = self.listProjet.horizontalHeaderItem(3)
-        item.setText(_translate("Rapport", "Action"))
-        item = self.lisrapport.horizontalHeaderItem(0)
-        item.setText(_translate("Rapport", "Gestionnaire"))
-        item = self.lisrapport.horizontalHeaderItem(1)
-        item.setText(_translate("Rapport", "Projet"))
-        item = self.lisrapport.horizontalHeaderItem(2)
-        item.setText(_translate("Rapport", "Action")) 
+        Dash.setWindowTitle(_translate("Dash", "Dash"))
+        self.dashboard.setText(_translate("Dash", "Tableau de bord"))
+        self.employee.setText(_translate("Dash", "Employée           "))
+        self.rapport.setText(_translate("Dash", "Rapport               "))
+        self.terminer.setText(_translate("Dash", "Quitter                 "))
+        self.label.setText(_translate("Dash", "Face smart project"))
+        self.recherche.setPlaceholderText(_translate("Dash", "Rechercher ici ..."))
+        self.userName.setText(_translate("Dash", "user name"))
+        self.cam.setText(_translate("Dash", "Camera               "))
+        self.themr.setText(_translate("Dash", "Théme                 "))
+        self.profil.setText(_translate("Dash", "Profil                    "))
+        self.label_5.setText(_translate("Dash", "Employée"))
+        self.label_6.setText(_translate("Dash", "Projet"))
+        self.label_7.setText(_translate("Dash", "Rapport"))
+        self.nmb_emp.setText(_translate("Dash", "5"))
+        self.nmb_prj.setText(_translate("Dash", "5"))
+        self.nmb_rap.setText(_translate("Dash", "5"))
+        item = self.listadmin.horizontalHeaderItem(0)
+        item.setText(_translate("Dash", "CIN"))
+        item = self.listadmin.horizontalHeaderItem(1)
+        item.setText(_translate("Dash", "Prénom"))
+        item = self.listadmin.horizontalHeaderItem(2)
+        item.setText(_translate("Dash", "Nom"))
+        self.label_8.setText(_translate("Dash", "List Admin"))
 
-    def afficher_proj(self):
-        conn = connection.connection
-        cursor = conn.cursor()
-        query = """
-SELECT nom, datedebu, datefin FROM Projet WHERE datefin > getdate() ;
-""" 
-        cursor.execute(query)
-        result = cursor.fetchall()
-
-        self.listProjet.setRowCount(len(result))
-
-        for row, data in enumerate(result):
-            nom = data[0]
-            datedebut = data[1]
-            datefin = data[2]
-
-            nom_item = QTableWidgetItem(str(nom))
-            datedebut_item = QTableWidgetItem(str(datedebut))
-            datefin_item = QTableWidgetItem(str(datefin))
-
-            self.listProjet.setItem(row, 0, nom_item)
-            self.listProjet.setItem(row, 1, datedebut_item)
-            self.listProjet.setItem(row, 2, datefin_item)
-
-            delete_button = QPushButton() 
-            delete_button.setIcon(QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\bin.png'))
-            delete_button.setStyleSheet("background-color: none; border: none;")
-            delete_button.clicked.connect(self.delete_projet)
-
-            self.listProjet.setCellWidget(row, 3, delete_button)
-
-    def afficher_rapp(self):
+    def admin(self):
         conn = connection.connection
         cursor = conn.cursor()
 
-        query = """
-        SELECT rapport.NomG, projet.nom AS nom
-        FROM rapport
-        INNER JOIN projet ON rapport.id_Proj = projet.id;
-"""
-        cursor.execute(query)
-        result = cursor.fetchall()
+        select = "select cin, nom, prenom from log_in"
+        cursor.execute(select)
+        results = cursor.fetchall()
 
-        self.lisrapport.setRowCount(len(result))
+        row_count = len(results)
+        self.listadmin.setRowCount(row_count)
 
-        for row, data in enumerate(result):
-            nom = data[0]
-            projet = data[1]
+        for row_index, row_data in enumerate(results):
+                for col_index, col_data in enumerate(row_data):
+                        self.listadmin.setItem(row_index, col_index, QTableWidgetItem(str(col_data)))
 
-            nom_item = QTableWidgetItem(str(nom))
-            projet_item = QTableWidgetItem(str(projet))
+    def emp_count(self):
+        conn = connection.connection
+        cursor = conn.cursor()
 
-            self.lisrapport.setItem(row, 0, nom_item)
-            self.lisrapport.setItem(row, 1, projet_item)
+        emp = "select count(*) from EMP"
+        cursor.execute(emp)
+        result = cursor.fetchone()
+        count = str(result[0]) if result else "0"  
+        self.nmb_emp.setText(count)
 
-            delete_button = QPushButton() 
-            delete_button.setIcon(QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\bin.png'))
-            delete_button.setStyleSheet("background-color: none; border: none;")
-            delete_button.clicked.connect(self.delete_rapp)
+    def project_count(self):
+         conn = connection.connection
+         cursor = conn.cursor()
 
-            self.lisrapport.setCellWidget(row, 2, delete_button) 
+         project = "select count(*) from Projet"
+         cursor.execute(project)
+         result = cursor.fetchone()
+         count = str(result[0]) if result else "0"  
+         self.nmb_prj.setText(count)
 
-    def delete_projet(self):
-        try: 
-             line = self.listProjet.currentRow()
-             if line != -1:
-                  nom_item = self.listProjet.item(line, 0)
-                  print("nom: ", nom_item)
-                  if nom_item is not None:
-                       nom = nom_item.text()
-                       print("nom: ", nom)
-                       conn = connection.connection
-                       cursor = conn.cursor()
-                       query = "DELETE FROM projet WHERE Nom = ?;"
-                       cursor.execute(query, (nom,))
-                       conn.commit()
-                       self.afficher_proj()
+    def rapport_count(self):
+        conn = connection.connection
+        cursor = conn.cursor()
 
-        except Exception as e:
-            print("erreur: ", e)
+        rapport = "select count(*) from Rapport"
+        cursor.execute(rapport)
+        result = cursor.fetchone()
+        count = str(result[0]) if result else "0"  
+        self.nmb_rap.setText(count)
 
-    def delete_rapp(self):
-        try: 
-             line = self.lisrapport.currentRow()
-             if line != -1:
-                  nom_item = self.lisrapport.item(line, 0)
+    def rechercher(self, text):
+        conn = connection.connection
+        cursor = conn.cursor()
 
-                  print("nom: ", nom_item)
-                  if nom_item is not None:
-                       nom = nom_item.text()
-                       print("nom: ", nom)
-                       conn = connection.connection
-                       cursor = conn.cursor()
-                       query = "DELETE FROM rapport WHERE NomG = ?;"
-                       cursor.execute(query, (nom,))
-                       conn.commit()
-                       self.afficher_rapp()
+        rechercher = self.recherche.text()
 
-        except Exception as e:
-             print("erreur: ", e)
+        if not rechercher:
+                self.admin()
 
-    def add_proj(self):
-        from add_projet import Ui_add_Projet
-        self.workSpace = QtWidgets.QWidget()
-        self.work = Ui_add_Projet()
-        self.work.setupUi(self.workSpace)
-        self.workSpace.show()
-
-        def close():
-            self.workSpace.close()
-
-        self.work.close.clicked.connect(close)      
-
-    def add_rap(self):
-        from add_rapp import Ui_rapp
-        self.workSpace = QtWidgets.QWidget()
-        self.work = Ui_rapp()
-        self.work.setupUi(self.workSpace)
-        self.workSpace.show()
-
-        def close():
-            self.workSpace.close()
-
-        self.work.close_5.clicked.connect(close) 
+        query = "SELECT cin, nom, prenom from log_in where cin LIKE ? OR nom LIKE ? OR prenom LIKE ?"
+        search_text = f"%{text}%"
+        cursor.execute(query, (search_text, search_text, search_text))
+        table = cursor.fetchall()
+        
+        self.listadmin.setRowCount(len(table))
 
     def close(self):
         from close import Ui_quitter
@@ -619,7 +546,7 @@ SELECT nom, datedebu, datefin FROM Projet WHERE datefin > getdate() ;
         self.Close.show()
         def hide():
             self.work.logOut()
-            Rapport.hide()
+            Dash.hide()
         self.work.oui.clicked.connect(hide)    
         def close():
             self.Close.hide()
@@ -643,16 +570,16 @@ SELECT nom, datedebu, datefin FROM Projet WHERE datefin > getdate() ;
         self.ui.setupUi(self.work_window)
         self.ui.set_user_info(name, pic_path)
         self.work_window.show()
-        self.widget.hide()   
+        self.widget.hide()
 
-    def open_Dash(self, name, pic_path):
-        from dashboard import Ui_dash
+    def open_rappot(self, name, pic_path):
+        from rapport import Ui_Rapport
         self.work_window = QtWidgets.QMainWindow()
-        self.ui = Ui_dash()
+        self.ui = Ui_Rapport()
         self.ui.setupUi(self.work_window)
         self.ui.set_user_info(name, pic_path)
         self.work_window.show()
-        self.widget.hide() 
+        self.widget.hide()   
 
     def open_emp(self, name, pic_path):
         from EMP import Ui_EMP
@@ -662,14 +589,12 @@ SELECT nom, datedebu, datefin FROM Projet WHERE datefin > getdate() ;
         self.ui.set_user_info(name, pic_path)
         self.work_window.show()
         self.widget.hide() 
- 
 
 if __name__ == "__main__":
     import sys
-    from EMP import Ui_EMP
     app = QtWidgets.QApplication(sys.argv)
-    Rapport = QtWidgets.QMainWindow()
-    ui = Ui_Rapport()
-    ui.setupUi(Rapport)
-    Rapport.show()
+    Dash = QtWidgets.QWidget()
+    ui = Ui_dash()
+    ui.setupUi(Dash)
+    Dash.show()
     sys.exit(app.exec_())

@@ -69,7 +69,6 @@ class Ui_banee(object):
 "")
         self.ajouter.setObjectName("ajouter")
         self.close = QtWidgets.QPushButton(self.add_widget)
-        self.close.clicked.connect(exit)
         self.close.setGeometry(QtCore.QRect(240, 10, 13, 13))
         self.close.setStyleSheet("QPushButton {\n"
 "   background-color: rgb(255, 60, 63);\n"
@@ -129,12 +128,9 @@ class Ui_banee(object):
         paint.setBrush(Qt.black)
         paint.drawEllipse(0, 0, diam, diam)
         paint.end()
-
         pixmap.setMask(mask)
-
+        
         return pixmap
-
-
 
     def select_pic(self, event):
         if event.button() == Qt.LeftButton:
@@ -156,6 +152,7 @@ class Ui_banee(object):
          nom = self.Nom.text()
          cause = self.cause.text()
          photo = self.selcted_photo_path
+         print(photo)
          try:
              conn = connection.connection
              cursor = conn.cursor()

@@ -1,8 +1,19 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap, QPainter, QBrush, QColor, QPen, QBitmap
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 import connection
-class Ui_EMP(object):
+
+class RechercgeManager(QObject):
+    rechercheChange = pyqtSignal(str)
+    def __init__(self):
+        super().__init__()
+  
+class Ui_EMP(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.recherche_manager = RechercgeManager()
+
     def setupUi(self, EMP):
         EMP.setObjectName("EMP")
         EMP.resize(905, 575)
@@ -343,64 +354,59 @@ class Ui_EMP(object):
         self.retranslateUi(EMP)
         QtCore.QMetaObject.connectSlotsByName(EMP)
 
-        self.widget.mousePressEvent = self.mouseclick
-        self.widget.mouseMoveEvent = self.mousemove
-
-        self.cam.clicked.connect(self.open_camera)
         self.Ajouter.clicked.connect(self.add_emp)
-        self.select_emp()
+        self.recherche_btn.clicked.connect(self.rechercher)
+        self.recherche_manager.rechercheChange.connect(self.rechercher)
+        self.recherche.textChanged.connect(self.recherche_manager.rechercheChange.emit)
+
+        self.name = None
+        self.pic_path = None
         
-        self.manager(1)
+        self.dashboard.clicked.connect(lambda: self.open_Dash(self.name, self.pic_path))
+        self.rapport.clicked.connect(lambda: self.open_rappot(self.name, self.pic_path))
+        self.cam.clicked.connect(lambda: self.open_camera(self.name, self.pic_path))
+        self.terminer.clicked.connect(self.close)
+        self.profil.clicked.connect(lambda: self.open_profile(self.name, self.pic_path))
+        
+        self.select_emp()
 
+    def set_user_info(self, name, pic_path):
+         self.name = name
+         self.pic_path = pic_path
+         self.update_user_info()
 
-    def rechercher(self):
-        pass
-
-    def cercle(self, pixmap):
-        diam = min(pixmap.width(), pixmap.height())
-        circle = QPixmap(diam, diam)
-        circle.fill(Qt.transparent)
-
-        mask = QBitmap(diam, diam)
-        mask.fill(Qt.white)
-
-        paint = QPainter(mask)
-        paint.setRenderHint(QPainter.Antialiasing, True)
-        paint.setBrush(Qt.black)
-        paint.drawEllipse(0, 0, diam, diam)
-        paint.end()
-
-        self.hide_btn.clicked.connect(self.hide)
-
-        pixmap.setMask(mask)
-        return pixmap 
-     
-    def manager(self,id):
-        conn = connection.connection
-        cursor = conn.cursor()
-
-        query = "select nom, photo from log_in where id = ?;"
-        cursor.execute(query, (id, ))
-        utilisateur = cursor.fetchone()
-
-        if utilisateur:
-            nom , photo = utilisateur
-            self.userName.setText(nom)
-            pixmap = QPixmap(photo)
-            circele = self.cercle(pixmap.scaled(40, 40)) 
-            self.user_pic.setPixmap(circele)
-
-
-    def mouseclick(self, event):
-        if event.button() == Qt.LeftButton:
-            self.mouseclick = event.globalPos()
-            self.mousemove = event.globalPos() - EMP.pos()
+    def update_user_info(self):
+         if self.name:
+              self.userName.setText(self.name)
+         if self.pic_path:
+              pixmap = QPixmap(self.pic_path)
+              pixmap = pixmap.scaled(40, 40)
+              pixmap = self.cercle(pixmap)
+              self.user_pic.setPixmap(pixmap)
     
-    def mousemove(self, event):
-        if event.buttons() == Qt.LeftButton:
-                position = event.globalPos()
-                diff = position - self.mouseclick
-                EMP.move(diff)
+    def cercle(self, pixmap):
+        size = pixmap.size()
+        mask = QPixmap(size)
+        mask.fill(Qt.transparent)
+
+        painter = QPainter(mask)
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setBrush(Qt.black)
+        painter.drawEllipse(0, 0, size.width(), size.height())
+        painter.end()
+
+        result = QPixmap(size)
+        result.fill(Qt.transparent)
+
+        painter.begin(result)
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setCompositionMode(QPainter.CompositionMode_Source)
+        painter.drawPixmap(0, 0, pixmap)
+        painter.setCompositionMode(QPainter.CompositionMode_DestinationIn)
+        painter.drawPixmap(0, 0, mask)
+        painter.end()
+
+        return result
 
     def retranslateUi(self, EMP):
         _translate = QtCore.QCoreApplication.translate
@@ -429,27 +435,17 @@ class Ui_EMP(object):
         action.setText(_translate("EMP", "ACTION"))
         self.Ajouter.setText(_translate("EMP", "Ajouter"))
 
-    def open_camera(self):
-        from camera import Ui_camera
-        self.work_window = QtWidgets.QMainWindow()
-        self.ui = Ui_camera()
-        self.ui.setupUi(self.work_window)
-        self.work_window.show()
-        EMP.hide()
-
     def add_emp(self):
         from add_emp import Ui_add
-        self.work_window = QtWidgets.QMainWindow()
+        self.work_window = QtWidgets.QWidget()
         self.ui = Ui_add()
         self.ui.setupUi(self.work_window)
         self.work_window.show()  
         self.select_emp()  
         def close():
             self.work_window.hide()
-        self.ui.close.clicked.connect(close)    
+        self.ui.close.clicked.connect(close) 
         
-
-
     def select_emp(self):
         conn =  connection.connection
         cursor = conn.cursor()
@@ -489,7 +485,7 @@ select cin, nom, prenom, fonction, date_debut from EMP;
     def open_view(self):
         from Udt_EMP import Ui_Form
 
-        self.workSpace = QtWidgets.QMainWindow()
+        self.workSpace = QtWidgets.QWidget()
         self.ui = Ui_Form()
         self.ui.setupUi(self.workSpace)
         self.workSpace.show()
@@ -528,74 +524,99 @@ select cin, nom, prenom, fonction, date_debut from EMP;
         except Exception as error:
                 print("erreur: ", error)
 
-    def hide(self):
-        _translate = QtCore.QCoreApplication.translate
+
+    def rechercher(self, text):
+        conn = connection.connection
+        cursor = conn.cursor()
+
+        query = "SELECT cin, nom, prenom, fonction, date_debut FROM EMP WHERE cin LIKE ? OR nom LIKE ? OR prenom LIKE ? OR fonction LIKE ? OR date_debut LIKE ?"
+        search_text = f"%{text}%"
+        cursor.execute(query, (search_text, search_text, search_text, search_text, search_text))
+        table = cursor.fetchall()
         
-        x_pos = (self.widget.width() - 605) // 2
-        y_pos = (self.widget.height() - 381) // 2
-        self.EMPWidget.setGeometry(QtCore.QRect(x_pos, y_pos, 650, 400))
-        self.Ajouter.setGeometry(QtCore.QRect(504, 30, 111, 29))
-        self.EMPTable.setGeometry(QtCore.QRect(20, 80, 616, 350))
-        self.menubar_2.setGeometry(QtCore.QRect(0, 0, 50, 501))
-        self.hide_btn.setGeometry(QtCore.QRect(5, 5, 31, 23))
-        self.dashboard.setGeometry(QtCore.QRect(0, 151, 49, 35))
-        self.dashboard.setText(_translate("EMP", ""))
-        self.employee.setGeometry(QtCore.QRect(0, 187, 49, 35))
-        self.employee.setText(_translate("EMP", ""))
-        self.rapport.setGeometry(QtCore.QRect(0, 223, 49, 35))
-        self.rapport.setText(_translate("EMP", ""))
-        self.cam.setGeometry(QtCore.QRect(0, 260, 49, 35))
-        self.cam.setText(_translate("EMP", ""))
-        self.profil.setGeometry(QtCore.QRect(0, 377, 49, 35))
-        self.profil.setText(_translate("EMP", ""))
-        self.themr.setGeometry(QtCore.QRect(0, 414, 49, 35))
-        self.themr.setText(_translate("EMP", ""))
-        self.terminer.setGeometry(QtCore.QRect(0, 450, 49, 35))
-        self.terminer.setText(_translate("EMP", ""))
-        self.recherche.setGeometry(QtCore.QRect(200, 30, 350, 20))
-        self.recherche_btn.setGeometry(QtCore.QRect(495, 31, 15, 15))
-        self.notification_btn.setGeometry(QtCore.QRect(590, 30, 21, 21))
-        self.userName.setGeometry(QtCore.QRect(650, 30, 51, 16))
-        self.label.hide()
-        self.logo.hide()
+        self.EMPTable.setRowCount(len(table))
 
-        self.hide_btn.clicked.connect(self.back)
+        for row_num, line in enumerate(table):
+            for col_num, data in enumerate(line):
+                item = QtWidgets.QTableWidgetItem(str(data))
+                self.EMPTable.setItem(row_num, col_num, item)
+             
+            widget = QtWidgets.QWidget()
+            widget.setStyleSheet("background-color: none;")
+            layout = QtWidgets.QGridLayout(widget)
+            layout.setContentsMargins(0, 0, 0, 0)
+            layout.setSpacing(0)
 
-    def back(self):
-        _translate = QtCore.QCoreApplication.translate
-        self.EMPWidget.setGeometry(QtCore.QRect(194, 90, 605, 381))
-        self.Ajouter.setGeometry(QtCore.QRect(494, 30, 91, 23)) 
-        self.EMPTable.setGeometry(QtCore.QRect(0, 80, 601, 301))
-        self.menubar_2.setGeometry(QtCore.QRect(0, 0, 191, 501))
-        self.hide_btn.setGeometry(QtCore.QRect(150, 10, 31, 23))
-        self.dashboard.setText(_translate("EMP", "Tableau de bord"))
-        self.dashboard.setGeometry(QtCore.QRect(0, 151, 191, 35))
-        self.employee.setGeometry(QtCore.QRect(0, 187, 191, 35))
-        self.employee.setText(_translate("EMP", "Employée           "))
-        self.rapport.setText(_translate("EMP", "Rapport               "))
-        self.rapport.setGeometry(QtCore.QRect(0, 223, 191, 35))
-        self.cam.setGeometry(QtCore.QRect(0, 260, 191, 35))
-        self.cam.setText(_translate("EMP", "Camera               "))
-        self.profil.setText(_translate("EMP", "Profil                    "))
-        self.profil.setGeometry(QtCore.QRect(0, 377, 191, 35))
-        self.themr.setText(_translate("EMP", "Théme                 "))
-        self.themr.setGeometry(QtCore.QRect(0, 414, 191, 35))
-        self.terminer.setText(_translate("EMP", "Quitter                 "))
-        self.terminer.setGeometry(QtCore.QRect(0, 450, 191, 35))
-        self.recherche.setGeometry(QtCore.QRect(270, 30, 311, 20))
-        self.recherche_btn.setGeometry(QtCore.QRect(550, 31, 15, 15))
-        self.notification_btn.setGeometry(QtCore.QRect(620, 30, 21, 21))
-        self.userName.setGeometry(QtCore.QRect(672, 30, 51, 16))
-        self.label.show()
-        self.logo.show()
-        self.hide_btn.clicked.connect(self.hide)
-        
-       
+            view = QtWidgets.QPushButton()
+            view.setStyleSheet("background-color: none; border: none;")
+            view.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\view.png'))
+            view.clicked.connect(self.open_view)
 
+            delete = QtWidgets.QPushButton() 
+            delete.setStyleSheet("background-color: none; border: none;")
+            delete.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\bin.png'))
+            delete.clicked.connect(self.delete_emp)
+
+            layout.addWidget(view, 0, 0, alignment=QtCore.Qt.AlignCenter)
+            layout.addWidget(delete, 0, 1, alignment=QtCore.Qt.AlignCenter)
+            self.EMPTable.setCellWidget(row_num, 5, widget) 
+
+    def close(self):
+        from close import Ui_quitter
+        self.Close = QtWidgets.QWidget()
+        self.work = Ui_quitter()
+        self.work.setupUi(self.Close)
+        self.Close.show()
+        def hide():
+            self.work.logOut()
+            EMP.hide()
+        self.work.oui.clicked.connect(hide)    
+        def close():
+            self.Close.hide()
+        self.work.non.clicked.connect(close)
+
+    def open_profile(self, name, pic_path):
+        from profil import Ui_profile
+        self.profil = QtWidgets.QMainWindow()
+        self.work = Ui_profile()
+        self.work.setupUi(self.profil)
+        self.work.set_user_info(name, pic_path)
+        self.profil.show()
+        def close():
+            self.profil.hide()
+        self.work.close.clicked.connect(close)
+
+    def open_camera(self, name, pic_path):
+        from camera import Ui_camera
+        self.work_window = QtWidgets.QMainWindow()
+        self.ui = Ui_camera()
+        self.ui.setupUi(self.work_window)
+        self.ui.set_user_info(name, pic_path)
+        self.work_window.show()
+        self.widget.hide()
+
+    def open_rappot(self, name, pic_path):
+        from rapport import Ui_Rapport
+        self.work_window = QtWidgets.QMainWindow()
+        self.ui = Ui_Rapport()
+        self.ui.set_user_info(name, pic_path)
+        self.ui.setupUi(self.work_window)
+        self.work_window.show()
+        self.widget.hide()   
+
+    def open_Dash(self, name, pic_path):
+        from dashboard import Ui_dash
+        self.work_window = QtWidgets.QMainWindow()
+        self.ui = Ui_dash()
+        self.ui.set_user_info(name, pic_path)
+        self.ui.setupUi(self.work_window)
+        self.work_window.show()
+        self.widget.hide() 
+                  
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    EMP = QtWidgets.QMainWindow()
+    EMP = QMainWindow()
     ui = Ui_EMP()
     ui.setupUi(EMP)
     EMP.show()

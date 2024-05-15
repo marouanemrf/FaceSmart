@@ -1,26 +1,30 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
 import connection
-from PyQt5.QtCore import Qt
-from interface import Ui_work
-import sys
-class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
-        self.chance = 0
-        self.max_chance = 3
-        self.MainWindow = MainWindow
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(783, 600)
-        MainWindow.setWindowFlags(QtCore.Qt.FramelessWindowHint)
-        MainWindow.setAttribute(QtCore.Qt.WA_TranslucentBackground)        
-        MainWindow.setMinimumSize(QtCore.QSize(600, 600))
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
+import cv2
+import os
+import glob
+import face_recognition
+import numpy as np
+import time
+
+class Ui_logIn(object):
+    
+    def setupUi(self, LogiInwindow):
+        self.LogiInwindow = LogiInwindow
+        LogiInwindow.setObjectName("LogiInwindow")
+        LogiInwindow.resize(783, 600)
+        LogiInwindow.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+        LogiInwindow.setAttribute(QtCore.Qt.WA_TranslucentBackground)        
+        LogiInwindow.setMinimumSize(QtCore.QSize(600, 600))
+        self.centralwidget = QtWidgets.QWidget(LogiInwindow)
         self.centralwidget.setStyleSheet("border-radius: 7px;")
         self.centralwidget.setObjectName("centralwidget")
         self.widget = QtWidgets.QWidget(self.centralwidget)
         self.widget.setGeometry(QtCore.QRect(70, 40, 671, 391))
         self.widget.setObjectName("widget")
-        self.widget.mousePressEvent = self.mouseclick
-        self.widget.mouseMoveEvent = self.mousemove
         self.image = QtWidgets.QLabel(self.widget)
         self.image.setGeometry(QtCore.QRect(310, -150, 411, 561))
         self.image.setStyleSheet("background-image: ;")
@@ -98,6 +102,10 @@ class Ui_MainWindow(object):
 "}\n"
 "rgb(136, 56, 255)")
         self.login_btn.setObjectName("login_btn")
+        self.came = QtWidgets.QPushButton(self.widget)
+        self.came.setGeometry(QtCore.QRect(0, 0, 20, 20))
+        self.came.setStyleSheet("background-color: none;")
+        self.came.setIcon(QtGui.QIcon('C:\\Users\\hp\\Desktop\\SmartFace\\icon\\camera.png'))
         self.label_name = QtWidgets.QLabel(self.widget)
         self.label_name.setGeometry(QtCore.QRect(60, 140, 61, 16))
         font = QtGui.QFont()
@@ -121,7 +129,7 @@ class Ui_MainWindow(object):
         self.label_2.setText("")
         self.label_2.setObjectName("label_2")
         self.close_btn = QtWidgets.QPushButton(self.widget)
-        self.close_btn.setGeometry(QtCore.QRect(660, 0, 10, 10))
+        self.close_btn.setGeometry(QtCore.QRect(655, 5, 10, 10))
         self.close_btn.setStyleSheet("QPushButton#close_btn {\n"
 "    background-color: rgb(255, 60, 63);\n"
 "    border-radius: 5px;\n"
@@ -135,7 +143,7 @@ class Ui_MainWindow(object):
         self.close_btn.clicked.connect(exit)
         self.close_btn.setObjectName("close_btn")
         self.rduit_btn = QtWidgets.QPushButton(self.widget)
-        self.rduit_btn.setGeometry(QtCore.QRect(645, 0, 10, 10))
+        self.rduit_btn.setGeometry(QtCore.QRect(640, 5, 10, 10))
         self.rduit_btn.setStyleSheet("QPushButton#rduit_btn{\n"
 "border-radius: 5px;\n"
 "background-color: rgb(0, 255, 0);\n"
@@ -144,142 +152,153 @@ class Ui_MainWindow(object):
 "    background-color: rgb(84, 255, 90);\n"
 "}")
         self.rduit_btn.setText("")
-        def reduire(self):
-            MainWindow.showMinimized()
+        def reduire():
+            LogiInwindow.showMinimized()
         
         self.rduit_btn.clicked.connect(reduire)
         self.rduit_btn.setObjectName("rduit_btn")
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
+        LogiInwindow.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(LogiInwindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 783, 21))
         self.menubar.setObjectName("menubar")
-        MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        LogiInwindow.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(LogiInwindow)
         self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
+        LogiInwindow.setStatusBar(self.statusbar)
 
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
-        self.login_btn.clicked.connect(self.login)
+        self.retranslateUi(LogiInwindow)
+        QtCore.QMetaObject.connectSlotsByName(LogiInwindow)
+
+        self.known_faces = []
+        self.known_names = []
+
+        self.registered_faces = 'admin/'
+
+        for name in os.listdir(self.registered_faces):
+            images_mask = os.path.join(self.registered_faces, name, '*.jpg')
+            images_paths = glob.glob(images_mask)
+            for image_path in images_paths:
+                encoding = self.get_encoding(image_path)
+                if encoding is not None:
+                    self.known_faces.append(encoding)
+                    self.known_names.append(name)
         
-    def mouseclick(self, event):
-        if event.button() == Qt.LeftButton:
-                self.mouseclick = event.globalPos()
-                self.mousemove = event.globalPos() - MainWindow.pos()        
+        self.came.clicked.connect(self.login_face)
+        self.login_btn.clicked.connect(self.login)    
+        
+    def get_encoding(self, image_path):
+        image = face_recognition.load_image_file(image_path)
+        face_encodings = face_recognition.face_encodings(image)
+        if len(face_encodings) > 0:
+            return face_encodings[0]
+        return None
 
-    def mousemove(self, event):
-        if event.buttons() == Qt.LeftButton:
-            position = event.globalPos()
-            diff = position - self.mousemove
-            MainWindow.move(diff)    
-
-    def retranslateUi(self, MainWindow):
+    def retranslateUi(self, LogiInwindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.image.setWhatsThis(_translate("MainWindow", "<html><head/><body><p><img src=\":/Enterprise-architecture.png\"/></p></body></html>"))
-        self.login_word.setText(_translate("MainWindow", "LOG IN"))
-        self.login_btn.setText(_translate("MainWindow", "LOGIN"))
-        self.label_name.setText(_translate("MainWindow", "UserName"))
-        self.label_password.setText(_translate("MainWindow", "Password"))
-        self.label.setText(_translate("MainWindow", "Welcome to the team,"))
+        LogiInwindow.setWindowTitle(_translate("LogiInwindow", "LogiInwindow"))
+        self.image.setWhatsThis("<html><head/><body><p><img src=\":/Enterprise-architecture.png\"/></p></body></html>")
+        self.login_word.setText(_translate("LogiInwindow", "LOG IN"))
+        self.login_btn.setText(_translate("LogiInwindow", "LOGIN"))
+        self.label_name.setText(_translate("LogiInwindow", "UserName"))
+        self.label_password.setText(_translate("LogiInwindow", "Password"))
+        self.label.setText(_translate("LogiInwindow", "Welcome to the team,"))
+
+    def open(self, name, pic_path):
+        from dashboard import Ui_dash 
+        self.work_window = QtWidgets.QMainWindow()
+        self.work = Ui_dash()
+
+        self.work.setupUi(self.work_window)
+        self.work.set_user_info(name, pic_path)
+        self.work_window.show()
+        LogiInwindow.hide()
 
     def login(self):
-        username = self.user_name.text()
-        password = self.password.text()
-        print("username: ",username)
-        print("password: ",password)
+        conn = connection.connection
+        try:
+                cursor = conn.cursor()
+
+                nameuser = self.user_name.text()
+                password = self.password.text()
+
+                if not nameuser and not password:
+                      self.erreur()
+                
+                query = "SELECT nom, photo FROM log_in WHERE nom = ? AND pass_word = ? ;"
+                cursor.execute(query, (nameuser, password))
+                result = cursor.fetchone()
+
+                if result:
+                   name = result[0]
+                   pic_path = result[1]
+                   self.open(name, pic_path)
+                else:
+                   self.erreur()
+        except Exception as e:
+            print("Erreur: ", e)
+        finally:
+                if cursor and not cursor.closed:
+                   cursor.close()
+
+    def login_face(self):
+        cap = cv2.VideoCapture(0)
+        ret, frame = cap.read()
+        if not ret:
+            return
 
         conn = connection.connection
         cursor = conn.cursor()
-        query = "select * from gestionair_login where userName = ? and password = ?"
 
         try:
-          cursor.execute(query,(username,password))
+            timeout = 5
+            start_time = time.time()
+            while time.time() - start_time < timeout:
+                frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                faces = face_recognition.face_locations(frame_rgb)
+                encodings = face_recognition.face_encodings(frame_rgb, faces)
 
-          user = cursor.fetchone()
+                encodings_np = np.array(encodings)
 
-          if user:
-            self.open()
-          else:
-            
-            self.chance += 1
+                if len(encodings_np) > 0:  
+                    for encoding_np in encodings_np:
+                        results = face_recognition.compare_faces(self.known_faces, encoding_np)
+                        if True in results:
+                            index = results.index(True)
+                            name = self.known_names[index]
 
-            if self.chance >= self.max_chance:
-                error_box = QtWidgets.QMessageBox()
-                error_box.setIcon(QtWidgets.QMessageBox.Warning)
-                error_box.setWindowTitle('Error LogIn')
-                error_box.setText('Maximum login attempts reached.')
-                error_box.addButton(QtWidgets.QMessageBox.Ok)
+                            query = "SELECT nom, photo FROM log_in WHERE nom = ?;"
+                            cursor.execute(query, (name,))
+                            result = cursor.fetchone()
 
-                
-                error_box.setStyleSheet("""
-                QMessageBox {
-                        background-color: #FE4C4C;
-                        border: 1px solid #FF5350;
-                        border-radius: 50px;
-                        padding: 20px;
-                        width: 400px;
-                        max-width: 90%;
-                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-                }
-                QMessageBox QPushButton {
-                        background-color: #FF5350;
-                        color: #F7D1D0;
-                        border: none;
-                        border-radius: 4px;
-                        padding: 10px 20px;
-                        font-size: 16px;
-                }
-                QMessageBox QPushButton:hover {
-                        background-color: #FC0000;
-                }
-                """)
+                            if result:
+                                name = result[0]
+                                pic_path = result[1]
 
-                error_box.exec_()
-                sys.exit()
+                                self.open(name, pic_path)
+                                cap.release()
+                                return  
+                            
+            print("Délai de détection du visage atteint.")
+        except Exception as e:
+            print("Erreur: ", e)
+        finally:
+            if cursor and not cursor.closed:
+                cursor.close()
 
-            else:                       
-
-                error_box = QtWidgets.QMessageBox()
-                error_box.setIcon(QtWidgets.QMessageBox.Warning)
-                error_box.setWindowTitle('Error LogIn')
-                error_box.setText('UserName or Password incorrect')
-                error_box.addButton(QtWidgets.QMessageBox.Ok)
-                error_box.setStyleSheet("""
-                        QMessageBox {
-                        background-color: #FE4C4C;
-                        border: 1px solid #FF5350;
-                        border-radius: 50px;
-                        padding: 20px;
-                        width: 400px;
-                        max-width: 90%;
-                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-                        }
-                        QMessageBox QPushButton {
-                        background-color: #FF5350;
-                        color: #F7D1D0;
-                        border: none;
-                        border-radius: 4px;
-                        padding: 10px 20px;
-                        font-size: 16px;
-                        }
-                        QMessageBox QPushButton:hover {
-                        background-color: #FC0000;
-                        }
-                """)
-                error_box.exec_()
-
-        except Exception as error:
-            print("error: ",error)
-
-    def open(self):
+    def erreur(self):
+        from erreur import Ui_erreur
         self.work_window = QtWidgets.QMainWindow()
-        self.work = Ui_work()
+        self.work = Ui_erreur()
+
         self.work.setupUi(self.work_window)
         self.work_window.show()
-        MainWindow.hide()
-    
-   
+        
+        def close():
+             self.work_window.close()
+
+        self.work.pushButton_2.clicked.connect(close)
+
+        
 
 import image_rc
 
@@ -287,8 +306,8 @@ import image_rc
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
+    LogiInwindow = QtWidgets.QMainWindow()
+    ui = Ui_logIn()
+    ui.setupUi(LogiInwindow)
+    LogiInwindow.show()
     sys.exit(app.exec_())
